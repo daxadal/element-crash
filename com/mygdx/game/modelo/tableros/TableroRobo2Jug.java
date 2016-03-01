@@ -8,6 +8,10 @@ import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 import com.mygdx.game.modelo.caramelos.Color;
 import com.mygdx.game.modelo.caramelos.Ingrediente;
+import com.mygdx.game.modelo.tableros.TableroBasic.SegmentoCol;
+import com.mygdx.game.modelo.tableros.TableroBasic.SegmentoFila;
+import com.mygdx.game.vista.Assets;
+import com.mygdx.game.vista.MD;
 
 /**
  * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece al jugador rojo,
@@ -126,8 +130,45 @@ public class TableroRobo2Jug extends TableroBasic {
 			rellenarCaidaHaciaIzda();
 		else
 			rellenarCaidaHaciaDcha();
-	}	
+	}
 	
+
+	@Override
+	protected boolean combinarDeBarrido() {
+		Vector<SegmentoFila> combinFila = sacarCombinFilas();
+		Vector<SegmentoCol> combinCol = sacarCombinCols();
+		//buscarIngredientesParaDestruir();
+		
+		if (combinFila.isEmpty() && combinCol.isEmpty())
+			return false;
+		else {
+			destruir(combinFila, combinCol);
+			crearEspecialesBarrido(combinFila, combinCol);
+			return true;
+		}
+		
+	}
+	/**
+	 * Recorre el tablero destruyendo los ingredientes que estén en la
+	 * zona de su mismo color
+	 */
+	private void buscarIngredientesParaDestruir() {
+		for (int i=0; i<FILAS; i++) { //Para cada fila
+			for (int j=0; j<COLS/2; j++) {//para cada casilla de cada fila
+				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
+					destruir(i, j);
+					//TODO Añadir puntos
+				}
+			}
+			for (int j=COLS/2; j<COLS; j++) {//para cada casilla de cada fila
+				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
+					destruir(i, j);
+					//TODO Añadir puntos
+				}
+			}
+		}		
+	}
+
 	/**
 	 * Rellena el tablero, haciendo que los caramelos caigan (hacia la derecha)
 	 * y posteriormente se creen caramelos nuevos para rellenar los huecos

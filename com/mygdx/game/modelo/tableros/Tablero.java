@@ -136,7 +136,9 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 
 	/**
 	 * Crea un caramelo en una casilla. La casilla debe estar vacía para
-	 *  que la creación sea efectiva.
+	 *  que la creación sea efectiva. Es la función que se usará por defecto.
+	 *  <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
+	 * cambio, sí comprueba que la casilla esté vacía.
 	 * @param candy ID de la chuchería
 	 * @param filaSpawn Fila donde aparece (en caso de que caiga desde arriba).
 	 * En Caso contrario filaSpawn = fila
@@ -147,6 +149,18 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * @return Devuelve si se ha podido hacer la creación
 	 */
 	public abstract boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col);
+	
+	/**
+	 * Introduce un caramelo en la casilla descrita. Puede ser de utilidad para los efectos de intercambio. <br><br>
+	 * <b>NO</b> llama a la función crear del Obsever <br>
+	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites, ni que la casilla
+	 * esté vacía
+	 * @param fila Fila de la casilla
+	 * @param candy
+	 * @param fila
+	 * @param col
+	 */
+	public abstract void introducir(Chucheria candy, int fila, int col);
 
 	/**
 	 * Destruye una casilla. Dependiendo de lo que contenga la casilla, puede tener distintos efectos,
@@ -154,7 +168,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * Llama a la función destruir de la chuchería antes de eliminarla del tablero <br> 
 	 * Es la función que se usará por defecto. <br> <br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
-	 * cambio, si comprueba que el elemento a destruir no sea nulo
+	 * cambio, sí comprueba que el elemento a destruir no sea nulo
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
 	 */
@@ -162,10 +176,10 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 
 	/**
 	 * Destruye una casilla, sin tener encuenta los efectos laterales que pueda tenga la chuchería. 
-	 * <b>NO</b> llama a la función destruir de la chuchería <br>
+	 * <b>NO</b> llama a la función destruir de la chuchería ni la del Obsever <br>
 	 * Puede ser de utilidad para los efectos de intercambio. <br><br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
-	 * cambio, si comprueba que el elemento a destruir no sea nulo
+	 * cambio, sí comprueba que el elemento a destruir no sea nulo
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
 	 */

@@ -187,6 +187,12 @@ public class TableroBasic extends Tablero {
 
 
 	@Override
+	public void introducir(Chucheria candy, int fila, int col) {
+		tablero[fila][col] = candy;
+	}
+
+
+	@Override
 	public void destruir(int fila, int col) { //TODO Posiblemente añadir parámetros caramelo destruido y forma de destruccion (normal, poer rallado, por envuelto, por bomba de color...)
 		if (tablero[fila][col] != null) {
 			boolean debeDestruirse = tablero[fila][col].destruir(this, fila, col);

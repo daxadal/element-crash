@@ -94,9 +94,9 @@ public class Envuelto extends Caramelo {
 		}
 		else { //Está en la primera fase
 			this.isExploding = true;
-			tablero.crear(this, fila, fila, col, col);
 			debeDestruirse = false;
 		}
+		tablero.introducir(this, fila, col);
 		return debeDestruirse;
 	}
 	

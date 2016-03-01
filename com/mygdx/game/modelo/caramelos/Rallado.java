@@ -17,7 +17,6 @@ public class Rallado extends Caramelo {
 	
 	@Override
 	public boolean destruir(Tablero tablero, int fila, int col) {
-		super.destruir(tablero, fila, col);	
 		tablero.suprimir(fila, col);
 	
 		if (isHorizontal) {
@@ -31,7 +30,7 @@ public class Rallado extends Caramelo {
 			}
 		}
 		
-		tablero.crear(this, fila, fila, col, col);
+		tablero.introducir(this, fila, col);
 		return true;
 	}
 	

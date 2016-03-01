@@ -253,6 +253,12 @@ public class BoardAnimation implements Tablero.Observer{
 		this.lastAnimation = AnimationType.DESTROY;
 	}
 	
+	@Override
+	public void onTransformCandy(StuffList candy, int fila, int col) {
+		// TODO Implementar transformacion de sprite
+		
+	}
+
 	/**
 	 * Ejecuta un paso de las aniaciones en curso. Si todas las animaciones en curso han terminado,
 	 * extrae la siguiente lista de tareas {@link AnimationTask} de la cola {@link BoardAnimation#interactionQueue }

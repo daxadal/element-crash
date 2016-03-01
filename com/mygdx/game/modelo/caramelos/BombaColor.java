@@ -29,17 +29,17 @@ public class BombaColor implements Chucheria {
 		boolean hayCambios = false;
 		
 		if (other instanceof Rallado) {
-			tablero.suprimir(filaSelf, colSelf);
-			tablero.suprimir(filaOther, colOther);
+			tablero.suprimir(filaSelf, colSelf, true);
+			tablero.suprimir(filaOther, colOther, true);
 			for(int i=0; i<tablero.getRows(); i++)
 				for (int j=0; j<tablero.getColumns(); j++) {
 					if (tablero.getElementAt(i, j) != null && tablero.getElementAt(i, j).getColor() == other.getColor()) {
-						tablero.suprimir(i, j);
+						tablero.suprimir(i, j, false);
 						double rand = Math.random();
 						if (rand < 0.5)
-							tablero.crear(new Rallado(other.getColor(), true), i, i, j, j);
+							tablero.introducir(new Rallado(other.getColor(), true), i, j, true);
 						else
-							tablero.crear(new Rallado(other.getColor(), false), i, i, j, j);
+							tablero.introducir(new Rallado(other.getColor(), false), i, j, true);
 					}
 						
 				}
@@ -49,13 +49,13 @@ public class BombaColor implements Chucheria {
 			hayCambios = true;
 		}
 		else if (other instanceof Envuelto) {
-			tablero.suprimir(filaSelf, colSelf);
-			tablero.suprimir(filaOther, colOther);
+			tablero.suprimir(filaSelf, colSelf, true);
+			tablero.suprimir(filaOther, colOther, true);
 			for(int i=0; i<tablero.getRows(); i++)
 				for (int j=0; j<tablero.getColumns(); j++) {
 					if (tablero.getElementAt(i, j) != null && tablero.getElementAt(i, j).getColor() == other.getColor()) {
-						tablero.suprimir(i, j);
-						tablero.crear(new Envuelto(other.getColor()), i, i, j, j);
+						tablero.suprimir(i, j, false);
+						tablero.introducir(new Envuelto(other.getColor()), i, j, true);
 					}
 						
 				}
@@ -65,15 +65,15 @@ public class BombaColor implements Chucheria {
 			hayCambios = true;
 		}
 		else if (other instanceof Caramelo) {
-			tablero.suprimir(filaSelf, colSelf);
-			tablero.suprimir(filaOther, colOther);
+			tablero.suprimir(filaSelf, colSelf, true);
+			tablero.suprimir(filaOther, colOther, true);
 			destruirColor(tablero, other.getColor());
 			
 			hayCambios = true;
 		}
 		else if (other instanceof BombaColor) {
-			tablero.suprimir(filaSelf, colSelf);
-			tablero.suprimir(filaOther, colOther);
+			tablero.suprimir(filaSelf, colSelf, true);
+			tablero.suprimir(filaOther, colOther, true);
 			for(int i=0; i<tablero.getRows(); i++)
 				for (int j=0; j<tablero.getColumns(); j++) {
 						tablero.destruir(i, j);

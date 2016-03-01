@@ -45,6 +45,9 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 		
 		/** Se ha destruido el caramelo de la posición (fila, col) */
 		void onDestroyCandy(int fila, int col);
+		
+		/** Se ha transformado el caramelo de la posición (fila, col) en uno de otro tipo */
+		void onTransformCandy(StuffList candy, int fila, int col);
 	}
 	
 	/** Almacena una chuchería y sus coordenadas en el tablero para poder
@@ -152,15 +155,17 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	
 	/**
 	 * Introduce un caramelo en la casilla descrita. Puede ser de utilidad para los efectos de intercambio. <br><br>
-	 * <b>NO</b> llama a la función crear del Obsever <br>
+	 * <b>NO</b> llama a la función crear del Obsever. Sin embargo, llama a la función transformar del
+	 * observer si se explicita <br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites, ni que la casilla
 	 * esté vacía
-	 * @param fila Fila de la casilla
 	 * @param candy
+	 * @param fila Fila de la casilla
 	 * @param fila
 	 * @param col
+	 * @param animateTransform Si es cierto, se llama al la funcion {@link Observer#onTransformCandy(StuffList, int, int)}
 	 */
-	public abstract void introducir(Chucheria candy, int fila, int col);
+	public abstract void introducir(Chucheria candy, int fila, int col, boolean animateTransform);
 
 	/**
 	 * Destruye una casilla. Dependiendo de lo que contenga la casilla, puede tener distintos efectos,
@@ -172,18 +177,23 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
 	 */
+	/*TODO Posiblemente añadir parámetros caramelo destruido y forma de destruccion
+	 *  (normal, poer rallado, por envuelto, por bomba de color...)
+	 */
 	public abstract void destruir(int fila, int col);
 
 	/**
 	 * Destruye una casilla, sin tener encuenta los efectos laterales que pueda tenga la chuchería. 
-	 * <b>NO</b> llama a la función destruir de la chuchería ni la del Obsever <br>
+	 * <b>NO</b> llama a la función destruir de la chuchería. Sin embargo, llama a la función destruir del
+	 * observer si se explicita <br>
 	 * Puede ser de utilidad para los efectos de intercambio. <br><br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
 	 * cambio, sí comprueba que el elemento a destruir no sea nulo
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
+	 * @param animateDestroy Si es cierto, se llama al la funcion {@link Observer#onDestroyCandy(int, int)}
 	 */
-	public abstract void suprimir(int fila, int col);
+	public abstract void suprimir(int fila, int col, boolean animateDestroy);
 
 	/** @return Numero de filas del tablero */
 	public int getRows() {

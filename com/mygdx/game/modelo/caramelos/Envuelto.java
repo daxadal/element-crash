@@ -76,7 +76,7 @@ public class Envuelto extends Caramelo {
 		boolean nColUlt = !(col == tablero.getColumns()-1);
 		boolean debeDestruirse = false;
 		
-		tablero.suprimir(fila, col);
+		tablero.suprimir(fila, col, false);
 		
 		if (nFila0)		tablero.destruir(fila-1, col);
 		if (nFilaUlt)	tablero.destruir(fila+1, col);
@@ -95,9 +95,9 @@ public class Envuelto extends Caramelo {
 		else { //Está en la primera fase
 			this.isExploding = true;
 			debeDestruirse = false;
-			//TODO cambiar sprite (Observer.onTransform())
 		}
-		tablero.introducir(this, fila, col);
+		
+		tablero.introducir(this, fila, col, true);
 		return debeDestruirse;
 	}
 	
@@ -127,8 +127,8 @@ public class Envuelto extends Caramelo {
 				boolean nFilaUlt = !(filaSelf == tablero.getRows()-1);
 				boolean nColUlt = !(colSelf == tablero.getColumns()-1);
 				
-				tablero.suprimir(filaSelf, colSelf);
-				tablero.suprimir(filaOther, colOther);
+				tablero.suprimir(filaSelf, colSelf, true);
+				tablero.suprimir(filaOther, colOther, true);
 				
 				this.destruirFila(tablero, filaSelf);
 				this.destruirCol(tablero, colSelf);
@@ -143,8 +143,8 @@ public class Envuelto extends Caramelo {
 				boolean nFilaUlt = !(filaOther == tablero.getRows()-1);
 				boolean nColUlt = !(colOther == tablero.getColumns()-1);
 				
-				tablero.suprimir(filaOther, colOther);
-				tablero.suprimir(filaSelf, colSelf);
+				tablero.suprimir(filaOther, colOther, true);
+				tablero.suprimir(filaSelf, colSelf, true);
 				
 				this.destruirFila(tablero, filaOther);
 				this.destruirCol(tablero, colOther);
@@ -159,7 +159,7 @@ public class Envuelto extends Caramelo {
 		else if (other instanceof Envuelto) {
 			this.radio = 2;
 			//((Envuelto) other).radio = 2;
-			tablero.suprimir(filaOther, colOther);
+			tablero.suprimir(filaOther, colOther, true);
 			tablero.destruir(filaSelf, colSelf);
 			
 			

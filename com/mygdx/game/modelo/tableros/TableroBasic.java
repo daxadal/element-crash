@@ -187,18 +187,18 @@ public class TableroBasic extends Tablero {
 
 
 	@Override
-	public void introducir(Chucheria candy, int fila, int col) {
+	public void introducir(Chucheria candy, int fila, int col, boolean animateTransform) {
 		tablero[fila][col] = candy;
+		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
 	}
 
 
 	@Override
-	public void destruir(int fila, int col) { //TODO Posiblemente añadir parámetros caramelo destruido y forma de destruccion (normal, poer rallado, por envuelto, por bomba de color...)
+	public void destruir(int fila, int col) { 
 		if (tablero[fila][col] != null) {
 			boolean debeDestruirse = tablero[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
-				this.suprimir(fila, col);
-				for (Observer o: obs) o.onDestroyCandy(fila, col);
+				this.suprimir(fila, col, true);
 			}
 			else
 				this.addToDestruirMasTarde(fila, col);
@@ -206,11 +206,11 @@ public class TableroBasic extends Tablero {
 	}
 	
 	@Override
-	public void suprimir(int fila, int col) {
+	public void suprimir(int fila, int col, boolean animateDestroy) {
 		if (tablero[fila][col] != null) {
 			tablero[fila][col] = null;
-			
 		}
+		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
 	}
 
 	@Override

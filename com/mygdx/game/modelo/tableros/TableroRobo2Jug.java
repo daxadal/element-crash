@@ -93,7 +93,7 @@ public class TableroRobo2Jug extends TableroBasic {
 		if (intercambioExitoso)
 			this.isRedPlayersTurn = !this.isRedPlayersTurn; //Cambio de turno
 		
-		//XXX TEST
+		//XXX TEST Implentar puntos de manera grafica
 		System.out.println("Score: R " + this.puntosRojo + ", A " + this.puntosAzul
 				+ " OnBoard: R " + this.ingRojosEnTablero + " (" + this.restantesParaIngRojo + " left),"
 				+ "A " + this.ingAzulesEnTablero + " (" + this.restantesParaIngAzul + " left),");
@@ -111,7 +111,7 @@ public class TableroRobo2Jug extends TableroBasic {
 	}
 	
 	@Override
-	public void destruir(int fila, int col) { //TODO Posiblemente añadir parámetros caramelo destruido y forma de destruccion (normal, poer rallado, por envuelto, por bomba de color...)
+	public void destruir(int fila, int col) {
 		if (tablero[fila][col] != null) {
 			boolean debeDestruirse = tablero[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
@@ -129,7 +129,7 @@ public class TableroRobo2Jug extends TableroBasic {
 					if (this.ingRojosEnTablero == 0 && this.restantesParaIngRojo > RESTANTES_PRIMERO)
 						this.restantesParaIngRojo = RESTANTES_PRIMERO;
 				}
-				this.suprimir(fila, col);
+				this.suprimir(fila, col, false);
 				for (Observer o: obs) o.onDestroyCandy(fila, col);
 			}
 			else
@@ -174,14 +174,12 @@ public class TableroRobo2Jug extends TableroBasic {
 				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
 					modificado = true;
 					destruir(i, j);
-					//TODO Añadir puntos
 				}
 			}
 			for (int j=COLS/2; j<COLS; j++) {//para cada casilla de cada fila
 				if (tablero[i][j].getID() == StuffList.CEREZA_AZUL) {
 					modificado = true;
 					destruir(i, j);
-					//TODO Añadir puntos
 				}
 			}
 		}

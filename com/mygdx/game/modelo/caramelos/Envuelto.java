@@ -95,6 +95,7 @@ public class Envuelto extends Caramelo {
 		else { //Está en la primera fase
 			this.isExploding = true;
 			debeDestruirse = false;
+			//TODO cambiar sprite (Observer.onTransform())
 		}
 		tablero.introducir(this, fila, col);
 		return debeDestruirse;

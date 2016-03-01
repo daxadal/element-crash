@@ -65,7 +65,9 @@ public class TableroRobo2Jug extends TableroBasic {
 		this.restantesParaIngRojo = RESTANTES_PRIMERO;
 		this.ingAzulesEnTablero = 0;
 		this.ingRojosEnTablero = 0;
-		this.ingEnTablero = new Vector<Chucheria>();
+		//this.ingEnTablero = new Vector<Chucheria>();
+		this.puntosRojo = 0;
+		this.puntosAzul = 0;
 
 		this.isRedPlayersTurn = true;
 		this.tablero = new Chucheria[FILAS][COLS];
@@ -91,6 +93,15 @@ public class TableroRobo2Jug extends TableroBasic {
 		if (intercambioExitoso)
 			this.isRedPlayersTurn = !this.isRedPlayersTurn; //Cambio de turno
 		
+		//XXX TEST
+		System.out.println("Score: R " + this.puntosRojo + ", A " + this.puntosAzul
+				+ " OnBoard: R " + this.ingRojosEnTablero + " (" + this.restantesParaIngRojo + " left),"
+				+ "A " + this.ingAzulesEnTablero + " (" + this.restantesParaIngAzul + " left),");
+		if (isRedPlayersTurn)
+			System.out.println("Red's turn!");
+		else
+			System.out.println("Blue's turn!");
+		
 		return intercambioExitoso;
 	}
 	
@@ -105,14 +116,16 @@ public class TableroRobo2Jug extends TableroBasic {
 			boolean debeDestruirse = tablero[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
 				if (tablero[fila][col].getID() == StuffList.CEREZA_AZUL) {
+					this.puntosAzul++;
 					this.ingAzulesEnTablero--;
-					this.ingEnTablero.remove(tablero[fila][col]);
+					//this.ingEnTablero.remove(tablero[fila][col]);
 					if (this.ingAzulesEnTablero == 0 && this.restantesParaIngAzul > RESTANTES_PRIMERO)
 						this.restantesParaIngAzul = RESTANTES_PRIMERO;
 				}
 				else if (tablero[fila][col].getID() == StuffList.CEREZA_ROJA) {
+					this.puntosRojo++;
 					this.ingRojosEnTablero--;
-					this.ingEnTablero.remove(tablero[fila][col]);
+					//this.ingEnTablero.remove(tablero[fila][col]);
 					if (this.ingRojosEnTablero == 0 && this.restantesParaIngRojo > RESTANTES_PRIMERO)
 						this.restantesParaIngRojo = RESTANTES_PRIMERO;
 				}
@@ -137,10 +150,11 @@ public class TableroRobo2Jug extends TableroBasic {
 	protected boolean combinarDeBarrido() {
 		Vector<SegmentoFila> combinFila = sacarCombinFilas();
 		Vector<SegmentoCol> combinCol = sacarCombinCols();
-		//buscarIngredientesParaDestruir();
+		
+		boolean ingrDestruidos = buscarIngredientesParaDestruir();
 		
 		if (combinFila.isEmpty() && combinCol.isEmpty())
-			return false;
+			return ingrDestruidos;
 		else {
 			destruir(combinFila, combinCol);
 			crearEspecialesBarrido(combinFila, combinCol);
@@ -152,21 +166,27 @@ public class TableroRobo2Jug extends TableroBasic {
 	 * Recorre el tablero destruyendo los ingredientes que estén en la
 	 * zona de su mismo color
 	 */
-	private void buscarIngredientesParaDestruir() {
+	private boolean buscarIngredientesParaDestruir() {
+		boolean modificado = false;
+		System.out.print("Iniciando busqueda de ingredientes... ");
 		for (int i=0; i<FILAS; i++) { //Para cada fila
 			for (int j=0; j<COLS/2; j++) {//para cada casilla de cada fila
 				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
+					modificado = true;
 					destruir(i, j);
 					//TODO Añadir puntos
 				}
 			}
 			for (int j=COLS/2; j<COLS; j++) {//para cada casilla de cada fila
-				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
+				if (tablero[i][j].getID() == StuffList.CEREZA_AZUL) {
+					modificado = true;
 					destruir(i, j);
 					//TODO Añadir puntos
 				}
 			}
-		}		
+		}
+		System.out.println("Busqueda finalizada!");
+		return modificado;
 	}
 
 	/**
@@ -197,7 +217,8 @@ public class TableroRobo2Jug extends TableroBasic {
 			while (jRec>=0) { //Rellenamos sobrantes
 				if (this.restantesParaIngAzul == 0) {
 					crear(new Ingrediente(Color.AZUL), i, i, jExtr, jRec);
-					this.ingEnTablero.add(tablero[i][jRec]);
+					//this.ingEnTablero.add(tablero[i][jRec]);
+					this.ingAzulesEnTablero++;
 					this.restantesParaIngAzul = RESTANTES_SIGUIENTES;
 				}
 				else {
@@ -240,7 +261,8 @@ public class TableroRobo2Jug extends TableroBasic {
 			while (jRec<COLS) { //Rellenamos sobrantes
 				if (this.restantesParaIngRojo == 0) {
 					crear(new Ingrediente(Color.ROJO), i, i, jExtr, jRec);
-					this.ingEnTablero.add(tablero[i][jRec]);
+					//this.ingEnTablero.add(tablero[i][jRec]);
+					this.ingRojosEnTablero++;
 					this.restantesParaIngRojo = RESTANTES_SIGUIENTES;
 				}
 				else {
@@ -263,14 +285,12 @@ public class TableroRobo2Jug extends TableroBasic {
 	
 	@Override
 	protected boolean quedaPorDestruir() {
-		boolean ingrEnMeta = false; //TODO comprobar si hay ingredientes en la meta
 		return !this.destruirMasTarde.isEmpty();
 	}
 
 
 	@Override
 	protected void destruirPendientes() {
-		//TODO destruir ingredientes en meta
 		Vector<ChucheYcoord> destruirAhora = this.destruirMasTarde; //movemos la lista..
 		this.destruirMasTarde = new Vector<ChucheYcoord>(); //...para crear una nueva donde se almacenen las nuevas destrucciones aplazadas..
 		for (ChucheYcoord ch : destruirAhora)
@@ -287,6 +307,10 @@ public class TableroRobo2Jug extends TableroBasic {
 	private int ingRojosEnTablero;
 	/** Número de ingredientes azules en el tablero */
 	private int ingAzulesEnTablero;
+	/** Puntos del jugador rojo */
+	private int puntosRojo;
+	/** Puntos del jugador azul */
+	private int puntosAzul;
 	/** Caramelos que es necesario destruir para que aparezca un
 	 * ingrediente en el tablero cuando <b>NO</b> hay otro de ese color*/
 	private static final int RESTANTES_PRIMERO = 6;
@@ -294,7 +318,7 @@ public class TableroRobo2Jug extends TableroBasic {
 	 * ingrediente en el tablero cuando <b>YA</b> hay otro de ese color*/
 	private static final int RESTANTES_SIGUIENTES = 60;
 	/** Vector que guarda los ingredientes que hay actualmente en el tablero */
-	private Vector<Chucheria> ingEnTablero;
+	//private Vector<Chucheria> ingEnTablero;
 	
 
 }

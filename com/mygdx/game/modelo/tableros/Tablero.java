@@ -1,9 +1,15 @@
 package com.mygdx.game.modelo.tableros;
 
+import java.util.Vector;
+
 import com.mygdx.game.controlador.GameType;
 import com.mygdx.game.controlador.Observable;
 import com.mygdx.game.controlador.StuffList;
+import com.mygdx.game.modelo.caramelos.BombaColor;
 import com.mygdx.game.modelo.caramelos.Chucheria;
+import com.mygdx.game.modelo.caramelos.Color;
+import com.mygdx.game.modelo.caramelos.Envuelto;
+import com.mygdx.game.modelo.caramelos.Rallado;
 /**
  * Represnta el tablero donde se encuentran todos los elementos del juego con los que se 
  * puede interactuar de alguna manera o que pueden afectar a otros elementos interactuables. Se excluyen del 
@@ -62,6 +68,58 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 		 */
 		public void destruir(Tablero tablero);
 
+	}
+	
+	/** Indica la localización de una combinación en fila, 
+	 * expresada por la fila en la que se encuentra, ademas
+	 * de las columnas de inicio y fin de la combinación.
+	 * Dichas columnas se encuentran incluidas por ambos
+	 * extremos
+	 */
+	protected static class SegmentoFila {
+		
+		public SegmentoFila(Color color, int fila, int colIni, int colFin) {
+			this.color = color;
+			this.fila = fila;
+			this.colIni = colIni;
+			this.colFin = colFin;
+		}
+		
+		public Color getColor() {return color;}	
+		public int getFila() {return fila;}	
+		public int getColIni() {return colIni;}	
+		public int getColFin() {return colFin;}
+		
+		protected Color color;
+		protected int fila;
+		protected int colIni;
+		protected int colFin;
+	}
+	
+	/** Indica la localización de una combinación en columna, 
+	 * expresada por la columna en la que se encuentra, ademas
+	 * de las filas de inicio y fin de la combinación.
+	 * Dichas filas se encuentran incluidas por ambos
+	 * extremos
+	 */
+	protected static class SegmentoCol {
+		
+		public SegmentoCol(Color color, int col, int filaIni, int filaFin) {
+			this.color = color;
+			this.col = col;
+			this.filaIni = filaIni;
+			this.filaFin = filaFin;
+		}
+		
+		public Color getColor() {return color;}	
+		public int getCol() {return col;}	
+		public int getFilaIni() {return filaIni;}	
+		public int getFilaFin() {return filaFin;}
+		
+		protected Color color;
+		protected int col;
+		protected int filaIni;
+		protected int filaFin;
 	}
 	
 	/**
@@ -252,6 +310,199 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * que requieren dos fases de destrucción (envueltos)*/
 	protected abstract void destruirPendientes();
 	
+	/**
+	 * Condición usada en el constructor. Determina, al generar el tablero,
+	 * si al añadir un caramelo se crea combinación con alguno ya existente
+	 * (arriba y a la izquierda)
+	 * @param i fila del caramelo
+	 * @param j columna del caramelo
+	 * @return <b>false</b> si tiene el mismo color que los dos inmediatamente a su izquierda
+	 * o que las dos inmediatamente encima. <br>
+	 * <b>true</b> en caso contrario
+	 */
+	protected boolean valido(int i,int j) {
+		boolean ok = true;
+		if (( i>=2 && this.getElementAt(i,j).equals(this.getElementAt(i-1,j)) && this.getElementAt(i,j).equals(this.getElementAt(i-2,j))) //Si coincide con los dos de arriba...
+			|| ( j>=2 && this.getElementAt(i,j).equals(this.getElementAt(i,j-1)) && this.getElementAt(i,j).equals(this.getElementAt(i,j-2))))//...o con los dos de la izquierda...
+			ok = false; //... no es valido
+		return ok;
+	}
+	
+	/**
+	 * Recorre el tablero en busca de combinaciones EN HORIZONTAL
+	 * @return Vector de combinaciones de filas, cada una recogida por la clase SegmentoFila
+	 * @see SegmentoFila
+	 */
+	protected Vector<SegmentoFila> sacarCombinFilas() {
+		int cont;
+		Color color;
+		Vector<SegmentoFila> combinFila = new Vector<SegmentoFila>();
+		for (int i=0; i<FILAS; i++) {
+			color = Color.NINGUNO;	//Preparamos la fila
+			cont = 0;
+			for (int j=0; j<COLS; j++) {	//Recorremos la fila
+				if (color == this.getElementAt(i,j).getColor()) //Si coincide color...
+					cont++;								//...hay otro más del mismo color seguido
+				
+				else {									//Si no coincide color...
+					if (cont >= 3 && color != Color.NINGUNO){ //Si ha habido tres o más de un color seguidos...
+						combinFila.add(new SegmentoFila(this.getElementAt(i,j-1).getColor(), i, j-cont, j-1)); //...marcamos para destruir
+					}
+					color = this.getElementAt(i,j).getColor();	//Ademas, actualizamos el color...
+					cont = 1;							//... y el contador
+				}
+			}
+			if (cont >= 3 && color != Color.NINGUNO){ //Si ha habido tres o más de un color seguidos...
+				combinFila.add(new SegmentoFila(this.getElementAt(i,COLS-1).getColor(), i, COLS-cont, COLS-1)); //...marcamos para destruir
+			}
+		}
+		
+		return combinFila;
+	}
+
+
+	/**
+	 * Recorre el tablero en busca de combinaciones EN VERTICAL
+	 * @return Vector de combinaciones de columnas, cada una recogida por la clase SegmentoCol
+	 * @see SegmentoCol
+	 */
+	protected Vector<SegmentoCol> sacarCombinCols() {
+		int cont;
+		Color color;
+		Vector<SegmentoCol> combinCol = new Vector<SegmentoCol>();
+		for (int j=0; j<COLS; j++){
+			color = Color.NINGUNO;	//Preparamos la columna
+			cont = 0;
+			for (int i=0; i<FILAS; i++) {	//Recorremos la columa
+				if (color == this.getElementAt(i,j).getColor()) //Si coincide color...
+					cont++;								//...hay otro más del mismo color seguido
+				
+				else {									//Si no coincide color...
+					if (cont >= 3 && color != Color.NINGUNO) //Si ha habido tres o más de un color seguidos...
+						combinCol.add(new SegmentoCol(this.getElementAt(i-1,j).getColor(), j, i-cont, i-1)); //...marcamos para destruir
+					color = this.getElementAt(i,j).getColor();	//Ademas, actualizamos el color...
+					cont = 1;							//... y el contador
+				}
+			}
+			if (cont >= 3 && color != Color.NINGUNO) //Si ha habido tres o más de un color seguidos...
+				combinCol.add(new SegmentoCol(this.getElementAt(FILAS-1,j).getColor(), j, FILAS-cont, FILAS-1)); //...marcamos para destruir
+		}
+		
+		return combinCol;
+	}
+
+
+	/**
+	 * Tras haber encontrado todas las combinaciones de filas y columnas en el tablero,
+	 * las destruye. Tambien tienen efecto los efectos laterales de la destrucción de
+	 * las chucherías implicadas
+	 * @param combinFila Vector de combinaciones de filas, cada una recogida por la clase SegmentoFila
+	 * @param combinCol Vector de combinaciones de columnas, cada una recogida por la clase SegmentoCol
+	 * @see SegmentoCol
+	 * @see SegmentoFila
+	 * @see sacarCombinFilas()
+	 * @see sacarCombinCols()
+	 */
+	protected void destruir(Vector<SegmentoFila> combinFila, Vector<SegmentoCol> combinCol) {
+		//Destrucciones horizontales
+		for (SegmentoFila seg: combinFila)
+			for (int i=seg.getColIni(); i<= seg.getColFin(); i++)
+				destruir(seg.getFila(), i);
+		
+		//Destrucciones verticalse
+		for (SegmentoCol seg: combinCol)
+			for (int i=seg.getFilaIni(); i<= seg.getFilaFin(); i++)
+				destruir(i, seg.getCol());
+	}
+
+	/**
+	 * Crea un caramelo del tipo especificado en el tablero dentro del hueco
+	 *  que ha dejado la combinación.
+	 * @param tablero Tablero en cuestión
+	 * @param candy Caramelo a crear
+	 * @param fila Fila donde se debe crear
+	 * @param colIni Límite izquierdo para crearlo
+	 * @param colFin Límite derecho para crearlo
+	 */
+	protected void crearEnFila(Tablero tablero, Chucheria candy, int fila, int colIni, int colFin) {	
+		boolean creado = false;
+		int col=colIni;
+		while (!creado && col<=colFin) {
+			creado = tablero.crear(candy, fila, fila, col, col);
+			col++;
+		}
+	}
+	
+	/**
+	 * Crea un caramelo del tipo especificado en el tablero dentro del hueco
+	 *  que ha dejado la combinación.
+	 * @param tablero Tablero en cuestión
+	 * @param candy Caramelo a crear
+	 * @param col Columna donde se debe crear
+	 * @param filaIni Límite izquierdo para crearlo
+	 * @param filaFin Límite derecho para crearlo
+	 */
+	protected void crearEnCol(Tablero tablero, Chucheria candy, int col, int filaIni, int filaFin) {
+		boolean creado = false;
+		int fila=filaIni;
+		while (!creado && fila<=filaFin) {
+			creado = tablero.crear(candy, fila, fila, col, col);
+			fila++;
+		}
+	}
+	
+	/**
+	 * Tras haber encontrado todas las combinaciones de filas y columnas en el tablero,
+	 * y tras haberlas destruido, se crean los caramelos especiales.
+	 * @param combinFila Vector de combinaciones de filas, cada una recogida por la clase SegmentoFila
+	 * @param combinCol Vector de combinaciones de columnas, cada una recogida por la clase SegmentoCol
+	 * @see SegmentoCol
+	 * @see SegmentoFila
+	 * @see sacarCombinFilas()
+	 * @see sacarCombinCols()
+	 */
+	protected void crearEspecialesBarrido(Vector<SegmentoFila> combinFila, Vector<SegmentoCol> combinCol) {
+				
+		//Creación de caramelos envueltos
+		for (SegmentoFila segFila : combinFila) 
+			for(SegmentoCol segCol : combinCol) {			
+				if (	segCol.getFilaIni() <= segFila.getFila() && segFila.getFila() <= segCol.getFilaFin()
+					 && segFila.getColIni() <= segCol.getCol() && segCol.getCol() <= segFila.getColFin() ) {
+					//Los segmentos se cortan -> Crear envuelto
+					boolean creado = this.crear(new Envuelto(segCol.getColor()), segFila.getFila(), segFila.getFila(), segCol.getCol(), segCol.getCol());
+					if (!creado) this.crearEnCol(this, new Envuelto(segCol.getColor()), segCol.getCol(), segCol.getFilaFin(), segCol.getFilaFin());
+				}
+			}
+		
+		//Creación de rallados H y bombas de color (combinaciones en columna)
+		for(SegmentoCol segCol : combinCol) {
+			if (segCol.getFilaFin() - segCol.getFilaIni() == 3)	{
+				//El segmento vertical tiene longitud 4 -> Crear rallado H
+				this.crearEnCol(this, new Rallado(segCol.getColor(), true), segCol.getCol(), segCol.getFilaIni(), segCol.getFilaFin());
+			}
+			else if (segCol.getFilaFin() - segCol.getFilaIni() >= 4)	{
+				int numBombas = segCol.getFilaFin() - segCol.getFilaIni() - 3;
+				for (int i=0; i<numBombas; i++)
+					this.crearEnCol(this, new BombaColor(), segCol.getCol(), segCol.getFilaIni(), segCol.getFilaFin());
+			}
+		}
+		
+		//Creación de rallados V y bombas de color (combinaciones en fila)
+		for (SegmentoFila segFila : combinFila) {
+			if (segFila.getColFin() - segFila.getColIni() == 3)	{
+				//El segmento horizontal tiene longitud 4 -> Crear rallado V
+				this.crearEnFila(this, new Rallado(segFila.getColor(), false), segFila.getFila(), segFila.getColIni(), segFila.getColFin());
+			}
+			
+			else if (segFila.getColFin() - segFila.getColIni() >= 4)	{
+				int numBombas = segFila.getColFin() - segFila.getColIni() - 3;
+				for (int i=0; i<numBombas; i++)
+					this.crearEnCol(this, new BombaColor(), segFila.getFila(), segFila.getColIni(), segFila.getColFin());
+			}
+		}
+	}
+
+
 	/**Número de filas*/
 	protected int FILAS;
 	/**Número de columnas*/

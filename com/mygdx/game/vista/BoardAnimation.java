@@ -179,7 +179,7 @@ public class BoardAnimation implements Tablero.Observer{
 					animCell[fila1][col1].getIcon()
 				));	
 		}
-		else {
+		else if (fila1 != fila2 || col1 != col2){ //Evito intercambiar una casilla con sigo misma
 			this.nextToQueueList.add(new AnimationTask(
 					AnimationType.SWAP_FREE, fila1, col1, fila2, col2, 
 					animCell[fila1][col1].getIcon()
@@ -255,7 +255,15 @@ public class BoardAnimation implements Tablero.Observer{
 	
 	@Override
 	public void onTransformCandy(StuffList candy, int fila, int col) {
-		// TODO Implementar transformacion de sprite
+		// TODO Implementacion provisional
+		if (this.lastAnimation != AnimationType.FALL)
+			this.endOfInteractionGroup();
+
+		this.nextToQueueList.add(new AnimationTask(
+				AnimationType.FALL, fila, col, fila, col, Assets.getIcon(candy)
+			));
+
+		this.lastAnimation = AnimationType.FALL;
 		
 	}
 

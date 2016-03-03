@@ -8,17 +8,13 @@ import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 import com.mygdx.game.modelo.caramelos.Color;
 import com.mygdx.game.modelo.caramelos.Ingrediente;
-import com.mygdx.game.modelo.tableros.TableroBasic.SegmentoCol;
-import com.mygdx.game.modelo.tableros.TableroBasic.SegmentoFila;
-import com.mygdx.game.vista.Assets;
-import com.mygdx.game.vista.MD;
 
 /**
  * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece al jugador rojo,
  * y la mitad derecha al jugador azul
  *
  */
-public class TableroRobo2Jug extends TableroBasic {
+public class TableroRobo2Jug extends Tablero {
 	
 	/** Almacena una chuchería y sus coordenadas en el tablero para poder
 	 * destruirla más tarde */
@@ -81,33 +77,21 @@ public class TableroRobo2Jug extends TableroBasic {
 	}
 	
 	@Override
-	public boolean intercambiar(int fila1, int col1, int fila2, int col2) {
-		boolean intercambioExitoso = false;
-		if (isRedPlayersTurn && col1 < COLS/2 && col2 < COLS/2) {
-			intercambioExitoso = super.intercambiar(fila1, col1, fila2, col2);
+	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
+		boolean creado = false;
+		if (tablero[fila][col] == null) {
+			tablero[fila][col] = candy;
+			for (Observer o: obs) o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
+			creado = true;
 		}
-		else if (col1 >= COLS/2 && col2 >= COLS/2) {
-			intercambioExitoso = super.intercambiar(fila1, col1, fila2, col2);
-		}
-		
-		if (intercambioExitoso)
-			this.isRedPlayersTurn = !this.isRedPlayersTurn; //Cambio de turno
-		
-		//XXX TEST Implentar puntos de manera grafica
-		System.out.println("Score: R " + this.puntosRojo + ", A " + this.puntosAzul
-				+ " OnBoard: R " + this.ingRojosEnTablero + " (" + this.restantesParaIngRojo + " left),"
-				+ "A " + this.ingAzulesEnTablero + " (" + this.restantesParaIngAzul + " left),");
-		if (isRedPlayersTurn)
-			System.out.println("Red's turn!");
-		else
-			System.out.println("Blue's turn!");
-		
-		return intercambioExitoso;
+		return creado;
 	}
-	
+
+
 	@Override
-	public GameType getGameType() {
-		return GameType.STEAL_2P;
+	public void introducir(Chucheria candy, int fila, int col, boolean animateTransform) {
+		tablero[fila][col] = candy;
+		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
 	}
 	
 	@Override
@@ -136,7 +120,56 @@ public class TableroRobo2Jug extends TableroBasic {
 				this.addToDestruirMasTarde(fila, col);
 		}
 	}
+
+	@Override
+	public void suprimir(int fila, int col, boolean animateDestroy) {
+		tablero[fila][col] = null;
+		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
+	}
+
+	@Override
+	public Chucheria getElementAt(int i, int j) throws ArrayIndexOutOfBoundsException {
+		return tablero[i][j];
+	}
 	
+	@Override
+	public boolean intercambiar(int fila1, int col1, int fila2, int col2) {
+		boolean intercambioExitoso = false;
+		if (isRedPlayersTurn && col1 < COLS/2 && col2 < COLS/2) {
+			intercambioExitoso = super.intercambiar(fila1, col1, fila2, col2);
+		}
+		else if (col1 >= COLS/2 && col2 >= COLS/2) {
+			intercambioExitoso = super.intercambiar(fila1, col1, fila2, col2);
+		}
+		
+		if (intercambioExitoso)
+			this.isRedPlayersTurn = !this.isRedPlayersTurn; //Cambio de turno
+		
+		//XXX TEST Implentar puntos de manera grafica
+		System.out.println("Score: R " + this.puntosRojo + ", A " + this.puntosAzul
+				+ " OnBoard: R " + this.ingRojosEnTablero + " (" + this.restantesParaIngRojo + " left),"
+				+ "A " + this.ingAzulesEnTablero + " (" + this.restantesParaIngAzul + " left),");
+		if (isRedPlayersTurn)
+			System.out.println("Red's turn!");
+		else
+			System.out.println("Blue's turn!");
+		
+		return intercambioExitoso;
+	}
+	
+	@Override
+	public GameType getGameType() {
+		return GameType.STEAL_2P;
+	}
+		
+	@Override
+	protected void swap(int fila1, int col1, int fila2, int col2) {
+		Chucheria aux = tablero[fila1][col1];
+		tablero[fila1][col1] = tablero[fila2][col2];
+		tablero[fila2][col2] = aux;	
+		for (Observer o: obs) o.onSwapCandy(fila1, col1, fila2, col2);
+	}
+
 	@Override
 	protected void rellenar() {
 		if (this.isRedPlayersTurn) 
@@ -162,6 +195,19 @@ public class TableroRobo2Jug extends TableroBasic {
 		}
 		
 	}
+	@Override
+	protected boolean quedaPorDestruir() {
+		return !this.destruirMasTarde.isEmpty();
+	}
+
+	@Override
+	protected void destruirPendientes() {
+		Vector<ChucheYcoord> destruirAhora = this.destruirMasTarde; //movemos la lista..
+		this.destruirMasTarde = new Vector<ChucheYcoord>(); //...para crear una nueva donde se almacenen las nuevas destrucciones aplazadas..
+		for (ChucheYcoord ch : destruirAhora)
+			ch.destruir(this);  //... y destruimos lo que tengamos pendiente
+	}
+
 	/**
 	 * Recorre el tablero destruyendo los ingredientes que estén en la
 	 * zona de su mismo color
@@ -276,24 +322,16 @@ public class TableroRobo2Jug extends TableroBasic {
 		}	
 	}
 	
-	@Override
 	protected void addToDestruirMasTarde(int fila, int col) {
 		this.destruirMasTarde.addElement(new ChucheYcoordRobo2Jug(tablero[fila][col], fila, col));
 	}
 	
-	@Override
-	protected boolean quedaPorDestruir() {
-		return !this.destruirMasTarde.isEmpty();
-	}
-
-
-	@Override
-	protected void destruirPendientes() {
-		Vector<ChucheYcoord> destruirAhora = this.destruirMasTarde; //movemos la lista..
-		this.destruirMasTarde = new Vector<ChucheYcoord>(); //...para crear una nueva donde se almacenen las nuevas destrucciones aplazadas..
-		for (ChucheYcoord ch : destruirAhora)
-			ch.destruir(this);  //... y destruimos lo que tengamos pendiente
-	}
+	/**Matriz de chucherías que representa el tablero, representado como (fila,columna)*/
+	private Chucheria[][] tablero;
+	
+	/** Las chucherías con varias fases de destrucciónse registran aquí
+	 *  para volver a destruirse cuando el tablero esté estable*/
+	private Vector<ChucheYcoord> destruirMasTarde;
 	
 	/** Indica si el jugador rojo (izquierdo) está jugando */
 	private boolean isRedPlayersTurn;
@@ -315,8 +353,6 @@ public class TableroRobo2Jug extends TableroBasic {
 	/** Caramelos que son necesarios destruir para que aparezca un
 	 * ingrediente en el tablero cuando <b>YA</b> hay otro de ese color*/
 	private static final int RESTANTES_SIGUIENTES = 60;
-	/** Vector que guarda los ingredientes que hay actualmente en el tablero */
-	//private Vector<Chucheria> ingEnTablero;
 	
 
 }

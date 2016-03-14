@@ -249,9 +249,12 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * cambio, sí comprueba que el elemento a destruir no sea nulo
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
-	 * @param animateDestroy Si es cierto, se llama al la funcion {@link Observer#onDestroyCandy(int, int)}
+	 * @param realDestroy Si es cierto, indica que la destrucción es real, no es una extracción temporal
+	 * 		necesario en un algoritmo. Por tanto, si <code>realDestroy == true</code> se llama 
+	 * 		al la funcion {@link Observer#onDestroyCandy(int, int)}, y
+	 * 		también se producen otros efectos como destrucción de gelatina.
 	 */
-	public abstract void suprimir(int fila, int col, boolean animateDestroy);
+	public abstract void suprimir(int fila, int col, boolean realDestroy);
 
 	/** @return Numero de filas del tablero */
 	public int getRows() {

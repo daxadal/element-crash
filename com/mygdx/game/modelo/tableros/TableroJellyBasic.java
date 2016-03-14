@@ -7,10 +7,10 @@ import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 
 /**
- * Clase que implementa la funcionalidad básica del <code>Tablero</code>, 
- * incluyendo la creación y efectos de caramelos especiales
+ * Extensión de <code>TableroBasic</code> que incluye la funcionalidad de la gelatina
+ * @see TableroBasic
  */
-public class TableroBasic extends Tablero {
+public class TableroJellyBasic extends Tablero {
 
 	
 	
@@ -43,18 +43,25 @@ public class TableroBasic extends Tablero {
 	 * Crea un tablero básico con caramelos aleatorios, asegurando
 	 * que no aparecen 3 de un mismo color ni en fila ni en columna
 	 */
-	public TableroBasic() {
+	public TableroJellyBasic() {
 		this.destruirMasTarde = new Vector<ChucheYcoord>();
 		this.FILAS = 8;
 		this.COLS = 8;
 		//this.addObserver(this.destruirMasTarde);
 		
-		this.tablero = new Chucheria[FILAS][COLS];
+		this.tableroChuches = new Chucheria[FILAS][COLS];
 		for (int i=0; i<FILAS; i++) {
 			for (int j=0; j<COLS; j++) {
 				do {
-					tablero[i][j] = new Caramelo();
+					tableroChuches[i][j] = new Caramelo();
 				}while (!valido(i,j));
+			}
+		}
+		
+		this.tableroGelatinas = new int[FILAS][COLS];
+		for (int i=0; i<FILAS; i++) {
+			for (int j=0; j<COLS; j++) {
+					tableroGelatinas[i][j] = 2;
 			}
 		}
 	}
@@ -62,8 +69,8 @@ public class TableroBasic extends Tablero {
 	@Override
 	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
 		boolean creado = false;
-		if (tablero[fila][col] == null) {
-			tablero[fila][col] = candy;
+		if (tableroChuches[fila][col] == null) {
+			tableroChuches[fila][col] = candy;
 			for (Observer o: obs) o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
 			creado = true;
 		}
@@ -73,32 +80,36 @@ public class TableroBasic extends Tablero {
 
 	@Override
 	public void introducir(Chucheria candy, int fila, int col, boolean animateTransform) {
-		tablero[fila][col] = candy;
+		tableroChuches[fila][col] = candy;
 		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
 	}
 
 
 	@Override
 	public void destruir(int fila, int col) { 
-		if (tablero[fila][col] != null) {
-			boolean debeDestruirse = tablero[fila][col].destruir(this, fila, col);
+		if (tableroChuches[fila][col] != null) {
+			boolean debeDestruirse = tableroChuches[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
 				this.suprimir(fila, col, true);
 			}
 			else
-				this.addToDestruirMasTarde(fila, col);
+				this.addToDestruirMasTarde(fila, col);	
 		}
 	}
 	
 	@Override
 	public void suprimir(int fila, int col, boolean animateDestroy) {
-		tablero[fila][col] = null;
-		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
+		tableroChuches[fila][col] = null;
+		if (animateDestroy) {
+			for (Observer o: obs) o.onDestroyCandy(fila, col);
+			if(tableroGelatinas[fila][col]>0)
+				tableroGelatinas[fila][col]--;
+		}
 	}
 
 	@Override
 	public Chucheria getElementAt(int i, int j) throws ArrayIndexOutOfBoundsException {
-		return tablero[i][j];
+		return tableroChuches[i][j];
 	}
 	
 	@Override
@@ -107,15 +118,15 @@ public class TableroBasic extends Tablero {
 	}
 
 	protected void addToDestruirMasTarde(int fila, int col) {
-		this.destruirMasTarde.addElement(new ChucheYcoordBasic(tablero[fila][col], fila, col));
+		this.destruirMasTarde.addElement(new ChucheYcoordBasic(tableroChuches[fila][col], fila, col));
 	}
 
 
 	@Override
 	protected void swap(int fila1, int col1, int fila2, int col2) {
-		Chucheria aux = tablero[fila1][col1];
-		tablero[fila1][col1] = tablero[fila2][col2];
-		tablero[fila2][col2] = aux;	
+		Chucheria aux = tableroChuches[fila1][col1];
+		tableroChuches[fila1][col1] = tableroChuches[fila2][col2];
+		tableroChuches[fila2][col2] = aux;	
 		for (Observer o: obs) o.onSwapCandy(fila1, col1, fila2, col2);
 	}
 
@@ -126,12 +137,12 @@ public class TableroBasic extends Tablero {
 			int iRec = FILAS-1; //Hueco (donde coloca)
 			
 			while (iExtr>=0) { //De abajo a arriba hacemos caer
-				if (tablero[iExtr][j] == null)
+				if (tableroChuches[iExtr][j] == null)
 					iExtr--;
 				else if (iRec != iExtr){
-					tablero[iRec][j] = tablero[iExtr][j]; //Colocamos en el hueco
+					tableroChuches[iRec][j] = tableroChuches[iExtr][j]; //Colocamos en el hueco
 					for (Observer o :obs) o.onFallCandy(iExtr, iRec, j, j); //Avisamos de la caida
-					tablero[iExtr][j] = null;
+					tableroChuches[iExtr][j] = null;
 					iExtr--;
 					iRec--;
 				}
@@ -183,7 +194,10 @@ public class TableroBasic extends Tablero {
 	}
 
 	/**Matriz de chucherías que representa el tablero, representado como (fila,columna)*/
-	private Chucheria[][] tablero;
+	private Chucheria[][] tableroChuches;
+	
+	/**Matriz de gelatinas del tablero, representado como (fila,columna)*/
+	private int[][] tableroGelatinas;
 	
 	/** Las chucherías con varias fases de destrucciónse registran aquí
 	 *  para volver a destruirse cuando el tablero esté estable*/

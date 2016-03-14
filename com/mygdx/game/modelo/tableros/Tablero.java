@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.mygdx.game.controlador.GameType;
 import com.mygdx.game.controlador.Observable;
 import com.mygdx.game.controlador.StuffList;
+import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.BombaColor;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 import com.mygdx.game.modelo.caramelos.Color;
@@ -271,6 +272,12 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites
 	 */
 	public abstract Chucheria getElementAt(int fila, int col) throws ArrayIndexOutOfBoundsException;
+	
+	/**
+	 * Devuelve los IDs de todos los elementos en la posicion del tablero especificada. <br><br>
+	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites
+	 */
+	public abstract StuffPile getPileOfElementsAt(int fila, int col) throws ArrayIndexOutOfBoundsException;
 	
 	/**
 	 * Devuelve el tipo de juego que representa el tablero

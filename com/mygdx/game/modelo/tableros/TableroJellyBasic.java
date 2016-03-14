@@ -3,6 +3,8 @@ package com.mygdx.game.modelo.tableros;
 import java.util.Vector;
 
 import com.mygdx.game.controlador.GameType;
+import com.mygdx.game.controlador.StuffList;
+import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 
@@ -47,7 +49,6 @@ public class TableroJellyBasic extends Tablero {
 		this.destruirMasTarde = new Vector<ChucheYcoord>();
 		this.FILAS = 8;
 		this.COLS = 8;
-		//this.addObserver(this.destruirMasTarde);
 		
 		this.tableroChuches = new Chucheria[FILAS][COLS];
 		for (int i=0; i<FILAS; i++) {
@@ -113,8 +114,20 @@ public class TableroJellyBasic extends Tablero {
 	}
 	
 	@Override
+	public StuffPile getPileOfElementsAt(int fila, int col)
+			throws ArrayIndexOutOfBoundsException {
+		StuffList jelly;
+		switch (tableroGelatinas[fila][col]) {
+			case 2: jelly = StuffList.GELATINA_NORMAL_2; break;
+			case 1: jelly = StuffList.GELATINA_NORMAL_1; break;
+			default: jelly = null;
+		}
+		return new StuffPile(tableroChuches[fila][col].getID(), jelly);
+	}
+
+	@Override
 	public GameType getGameType() {
-		return GameType.BASIC;
+		return GameType.JELLY_BASIC;
 	}
 
 	protected void addToDestruirMasTarde(int fila, int col) {

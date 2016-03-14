@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.controlador.Controlador;
 import com.mygdx.game.controlador.GameType;
 import com.mygdx.game.controlador.StuffList;
 import com.mygdx.game.modelo.tableros.Tablero;
@@ -127,13 +128,13 @@ public class BoardAnimation implements Tablero.Observer{
 		}
 	}
 	
-	public BoardAnimation(Tablero tablero) {
+	public BoardAnimation(Controlador controlTablero) {
 		interactionQueue = new ConcurrentLinkedQueue<LinkedList<AnimationTask>>();
 		actualList = new LinkedList<AnimationCell>();
 		nextToQueueList = new LinkedList<AnimationTask>();
 		animCell = new AnimationCell[MD.filas()][MD.cols()];
 		lastAnimation = AnimationType.NONE;
-		gameType = tablero.getGameType();
+		gameType = controlTablero.getGameType();
 		
 		StuffList thing;
 		Texture icon;
@@ -141,7 +142,7 @@ public class BoardAnimation implements Tablero.Observer{
 		
 		for (int j=0; j<MD.filas(); j++) //Para cada fila
 			for (int i=0; i<MD.cols(); i++) {//para cada casilla de cada fila
-				thing = tablero.getElementAt(j, i).getID();
+				thing = controlTablero.getElementAt(j, i);
 				icon = Assets.getIcon(thing);
 				animCell[j][i] = new AnimationCell(j, i, icon);	
 			}
@@ -325,14 +326,14 @@ public class BoardAnimation implements Tablero.Observer{
 		//Pintar fondo de gelatina
 		for (int j=0; j<MD.filas(); j++) { //Para cada fila
 			for (int i=0; i<MD.cols()/2; i++) {//para cada casilla de cada fila
-				batch.draw(Assets.gelatinaR, 
+				batch.draw(Assets.gelatinaR2, 
 						MD.originX() + i*MD.dim(),
 						MD.originY() - (j+1)*MD.dim(),
 						MD.dim(), MD.dim()
 					);
 			}
 			for (int i=MD.cols()/2; i<MD.cols(); i++) {//para cada casilla de cada fila
-				batch.draw(Assets.gelatinaAz, 
+				batch.draw(Assets.gelatinaAz2, 
 						MD.originX() + i*MD.dim(),
 						MD.originY() - (j+1)*MD.dim(),
 						MD.dim(), MD.dim()

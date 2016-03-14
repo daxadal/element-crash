@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import com.mygdx.game.controlador.GameType;
 import com.mygdx.game.controlador.StuffList;
+import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 import com.mygdx.game.modelo.caramelos.Color;
@@ -132,6 +133,17 @@ public class TableroRobo2Jug extends Tablero {
 		return tablero[i][j];
 	}
 	
+	@Override
+	public StuffPile getPileOfElementsAt(int fila, int col)
+			throws ArrayIndexOutOfBoundsException {
+		StuffList jelly;
+		if (col<COLS/2) 
+			jelly = StuffList.GELATINA_ROJA_2;
+		else 
+			jelly = StuffList.GELATINA_AZUL_2;
+		return new StuffPile(tablero[fila][col].getID(), jelly);
+	}
+
 	@Override
 	public boolean intercambiar(int fila1, int col1, int fila2, int col2) {
 		boolean intercambioExitoso = false;

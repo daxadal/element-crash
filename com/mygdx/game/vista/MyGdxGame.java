@@ -31,7 +31,7 @@ public class MyGdxGame implements ApplicationListener {
 	@Override
 	public void resize(int width, int height) {
 		MD.rearrange(width, height, tablero.getRows(), tablero.getColumns(), tablero.getGameType());
-		this.boardAnim = new BoardAnimation(this.tablero);
+		this.boardAnim = new BoardAnimation(this.controlador);
 		this.tablero.addObserver(this.boardAnim);
 		createTouchPoints();
 		/* TODO pausa del renderizado

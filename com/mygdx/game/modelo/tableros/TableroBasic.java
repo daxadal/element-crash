@@ -3,6 +3,7 @@ package com.mygdx.game.modelo.tableros;
 import java.util.Vector;
 
 import com.mygdx.game.controlador.GameType;
+import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 
@@ -101,6 +102,12 @@ public class TableroBasic extends Tablero {
 		return tablero[i][j];
 	}
 	
+	@Override
+	public StuffPile getPileOfElementsAt(int fila, int col)
+			throws ArrayIndexOutOfBoundsException {
+		return new StuffPile(tablero[fila][col].getID(), null);
+	}
+
 	@Override
 	public GameType getGameType() {
 		return GameType.BASIC;

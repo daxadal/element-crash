@@ -120,6 +120,7 @@ public class TableroJellyBasic extends Tablero {
 		switch (jellyInt) {
 			case 2: jelly = StuffList.GELATINA_NORMAL_2; break;
 			case 1: jelly = StuffList.GELATINA_NORMAL_1; break;
+			case 0: jelly = StuffList.SIN_GELATINA;		 break;
 			default: jelly = null;
 		}
 		return jelly;

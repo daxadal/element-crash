@@ -3,6 +3,7 @@ package com.mygdx.game.modelo.tableros;
 import java.util.Vector;
 
 import com.mygdx.game.controlador.GameType;
+import com.mygdx.game.controlador.StuffList;
 import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
@@ -105,7 +106,7 @@ public class TableroBasic extends Tablero {
 	@Override
 	public StuffPile getPileOfElementsAt(int fila, int col)
 			throws ArrayIndexOutOfBoundsException {
-		return new StuffPile(tablero[fila][col].getID(), null);
+		return new StuffPile(tablero[fila][col].getID(), StuffList.SIN_GELATINA);
 	}
 
 	@Override

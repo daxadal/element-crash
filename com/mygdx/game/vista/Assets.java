@@ -89,7 +89,7 @@ public class Assets {
 		//TODO gelatinaAz1 = new Texture("iconos/candy images/gelatina/gelatinaAz.png");
 		//TODO gelatinaR1 = new Texture("iconos/candy images/gelatina/gelatinaR.png");
 		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB2.png");
-		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB1.png");
+		gelatinaB1 = new Texture("iconos/candy images/gelatina/gelatinaB1.png");
 		gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
 		
 		//Decoraciones y animaciones
@@ -139,17 +139,17 @@ public class Assets {
 			
 			//Envueltos (explotando)
 			case CARAMELO_EXPLOTANDO_AMARILLO:	icon = amarilloX;	break;
-			case CARAMELO_EXPLOTANDO_AZUL:		icon = azulX;	break;
-			case CARAMELO_EXPLOTANDO_ROJO:		icon = rojoX;	break;
+			case CARAMELO_EXPLOTANDO_AZUL:		icon = azulX;		break;
+			case CARAMELO_EXPLOTANDO_ROJO:		icon = rojoX;		break;
 			case CARAMELO_EXPLOTANDO_NARANJA:	icon = naranjaX;	break;
-			case CARAMELO_EXPLOTANDO_VERDE:		icon = verdeX;	break;
-			case CARAMELO_EXPLOTANDO_MORADO:	icon = moradoX;	break;
+			case CARAMELO_EXPLOTANDO_VERDE:		icon = verdeX;		break;
+			case CARAMELO_EXPLOTANDO_MORADO:	icon = moradoX;		break;
 			
 			//Chuches sin color
 			case BOMBA_COLOR:	icon = bombaColor;	break;
-			case CEREZA:		icon = cereza;	break;
+			case CEREZA:		icon = cereza;		break;
 			case CEREZA_AZUL:	icon = cerezaAz;	break;
-			case CEREZA_ROJA:	icon = cerezaR;	break;
+			case CEREZA_ROJA:	icon = cerezaR;		break;
 			
 			//Gelatinas
 			case GELATINA_AZUL_1:	icon = gelatinaAz1;	break;
@@ -158,6 +158,7 @@ public class Assets {
 			case GELATINA_NORMAL_2:	icon = gelatinaB2;	break;
 			case GELATINA_ROJA_1:	icon = gelatinaR1;	break;
 			case GELATINA_ROJA_2:	icon = gelatinaR2;	break;
+			case SIN_GELATINA:		icon = gelatinaFondo;	break;
 			
 		}
 		return icon;

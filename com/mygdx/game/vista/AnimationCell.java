@@ -46,7 +46,7 @@ public class AnimationCell {
 		this.icon = icon;
 		this.movement = AnimationType.NONE;
 		time = 0;
-		this.sprite = Assets.destroy.getKeyFrame(time, false);
+		this.sprite = null;
 	}
 	
 	public void newFall(int filaIni, int col, int filaFin, Texture icon) {
@@ -122,6 +122,14 @@ public class AnimationCell {
 		time = 0;
 		this.sprite = Assets.destroy.getKeyFrame(time, false);
 		movement = AnimationType.DESTROY;
+	}
+	
+	public void newJellyDestroy(Texture icon) {
+		//TODO Hacer animación
+		this.icon = icon;
+		time = 0;
+		this.sprite = null;
+		movement = AnimationType.NONE;
 	}
 	
 	public float getX() {

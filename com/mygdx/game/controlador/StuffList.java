@@ -1,7 +1,7 @@
 package com.mygdx.game.controlador;
 
 public enum StuffList {
-
+	
 	//Caramelos normales
 	CARAMELO_NORMAL_AMARILLO,
 	CARAMELO_NORMAL_AZUL,

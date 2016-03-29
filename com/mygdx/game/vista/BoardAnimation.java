@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.controlador.Controlador;
 import com.mygdx.game.controlador.GameType;
 import com.mygdx.game.controlador.StuffList;
+import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.tableros.Tablero;
 
 /**
@@ -54,7 +55,10 @@ public class BoardAnimation implements Tablero.Observer{
 		 * y lo añade a la lista {@link BoardAnimation#actualList} de animaciones en curso
 		 */
 		public void activate() {
+			Texture aux;
 			switch (movement) {
+			case NONE: break;
+			
 			case DESTROY: 
 				animCell[filaFin][colFin].newDestroy();
 				actualList.add(animCell[filaFin][colFin]);
@@ -85,7 +89,7 @@ public class BoardAnimation implements Tablero.Observer{
 				break;
 				
 			case SWAP_FREE:
-				Texture aux = animCell[filaFin][colFin].getIcon();
+				aux = animCell[filaFin][colFin].getIcon();
 				
 				animCell[filaFin][colFin].newFreeSwap(filaIni, colIni, filaFin, colFin, 
 						animCell[filaIni][colIni].getIcon()
@@ -98,30 +102,31 @@ public class BoardAnimation implements Tablero.Observer{
 				break;
 			
 			case SWAP_H:
-				Texture aux2 = animCell[filaFin][colFin].getIcon();
+				aux = animCell[filaFin][colFin].getIcon();
 				
 				animCell[filaFin][colFin].newHorizontalSwap(filaIni, colIni, colFin, 
 						animCell[filaIni][colIni].getIcon()
 					);
 				actualList.add(animCell[filaFin][colFin]);
 				
-				animCell[filaIni][colIni].newHorizontalSwap(filaFin, colFin, colIni, aux2);
+				animCell[filaIni][colIni].newHorizontalSwap(filaFin, colFin, colIni, aux);
 				actualList.add(animCell[filaIni][colIni]);
 				break;
 				
 			case SWAP_V:
-				Texture aux3 = animCell[filaFin][colFin].getIcon();
+				aux = animCell[filaFin][colFin].getIcon();
 				
 				animCell[filaFin][colFin].newVerticalSwap(filaIni, filaFin, colFin, 
 						animCell[filaIni][colIni].getIcon()
 					);
 				actualList.add(animCell[filaFin][colFin]);
 				
-				animCell[filaIni][colIni].newVerticalSwap(filaFin, filaIni, colIni, aux3);
+				animCell[filaIni][colIni].newVerticalSwap(filaFin, filaIni, colIni, aux);
 				actualList.add(animCell[filaIni][colIni]);
 				break;
 				
-			default:
+			case JELLY_DESTROY:
+				jellyAnimCell[filaFin][colFin].newJellyDestroy(icon);
 				break;
 			
 			}
@@ -136,15 +141,23 @@ public class BoardAnimation implements Tablero.Observer{
 		lastAnimation = AnimationType.NONE;
 		gameType = controlTablero.getGameType();
 		
-		StuffList thing;
+		if (gameType == GameType.JELLY_BASIC)
+			jellyAnimCell = new AnimationCell[MD.filas()][MD.cols()];
+		
+		
+		StuffPile pileOfThings;
 		Texture icon;
 		
 		
 		for (int j=0; j<MD.filas(); j++) //Para cada fila
 			for (int i=0; i<MD.cols(); i++) {//para cada casilla de cada fila
-				thing = controlTablero.getElementAt(j, i);
-				icon = Assets.getIcon(thing);
-				animCell[j][i] = new AnimationCell(j, i, icon);	
+				pileOfThings = controlTablero.getPileOfElementsAt(j, i);
+				icon = Assets.getIcon(pileOfThings.getCandy());
+				animCell[j][i] = new AnimationCell(j, i, icon);
+				if (gameType == GameType.JELLY_BASIC) {
+					icon = Assets.getIcon(pileOfThings.getJelly());
+					jellyAnimCell[j][i] = new AnimationCell(j,i,icon);
+				}
 			}
 	}
 	
@@ -250,7 +263,7 @@ public class BoardAnimation implements Tablero.Observer{
 		this.nextToQueueList.add(new AnimationTask(
 				AnimationType.DESTROY, fila, col, fila, col, null
 			));
-		
+				
 		this.lastAnimation = AnimationType.DESTROY;
 	}
 	
@@ -266,6 +279,18 @@ public class BoardAnimation implements Tablero.Observer{
 
 		this.lastAnimation = AnimationType.FALL;
 		
+	}
+
+	@Override
+	public void onDestroyJelly(int fila, int col, StuffList newJelly) {	
+		if (this.lastAnimation != AnimationType.DESTROY)
+			this.endOfInteractionGroup();
+		
+		this.nextToQueueList.add(new AnimationTask(
+				AnimationType.JELLY_DESTROY, fila, col, fila, col, Assets.getIcon(newJelly)
+			));
+		
+		this.lastAnimation = AnimationType.DESTROY;
 	}
 
 	/**
@@ -302,6 +327,8 @@ public class BoardAnimation implements Tablero.Observer{
 	public void drawTablero(SpriteBatch batch) {
 		if (gameType == GameType.STEAL_2P)
 			this.pintarGelatina2Jug(batch);
+		else if (gameType == GameType.JELLY_BASIC)
+			this.pintarGelatina(batch);
 		
 		//Pintar chucherias
 		for (int j=0; j<MD.filas(); j++) //Para cada fila
@@ -313,6 +340,27 @@ public class BoardAnimation implements Tablero.Observer{
 				else
 					batch.draw(animCell[j][i].getSprite(), animCell[j][i].getX(),
 							animCell[j][i].getY(), MD.dim(), MD.dim()
+						);
+			}
+
+	}
+	
+	/**
+	 * Dibuja el tablero, tanto los elementos jugables como las decoraciones del propio tablero,
+	 * tales como el fondo de gelatina
+	 * @param batch Herramienta de dibujo
+	 */
+	protected void pintarGelatina(SpriteBatch batch) {		
+		//Pintar gelatina
+		for (int j=0; j<MD.filas(); j++) //Para cada fila
+			for (int i=0; i<MD.cols(); i++) {//para cada casilla de cada fila
+				if (jellyAnimCell[j][i].getIcon() != null )
+					batch.draw(jellyAnimCell[j][i].getIcon(), jellyAnimCell[j][i].getX(),
+							jellyAnimCell[j][i].getY(), MD.dim(), MD.dim()
+						);
+				else
+					batch.draw(Assets.gelatinaFondo, jellyAnimCell[j][i].getX(),
+							jellyAnimCell[j][i].getY(), MD.dim(), MD.dim()
 						);
 			}
 
@@ -361,6 +409,11 @@ public class BoardAnimation implements Tablero.Observer{
 	 * @see AnimationCell
 	 */
 	private AnimationCell[][] animCell;
+	/** Matriz donde cada elemento guarda el texture, la posición y el tamaño de
+	 * la gelatina
+	 * @see AnimationCell
+	 */
+	private AnimationCell[][] jellyAnimCell;
 	/**
 	 * Guarda la última animación que se realizó, para poder distinguir cuáles
 	 * se pueden realizar a la vez. No distingue entre distintos tipos de SWAP o de FALL,

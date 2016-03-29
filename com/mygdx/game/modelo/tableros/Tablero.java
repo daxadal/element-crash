@@ -53,6 +53,10 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 		/** Se ha destruido el caramelo de la posición (fila, col) */
 		void onDestroyCandy(int fila, int col);
 		
+		/** Se ha destruido el caramelo de la posición (fila, col) 
+		 * @param newJelly nueva gelatina en la posición (null si no hay más)*/
+		void onDestroyJelly(int fila, int col, StuffList newJelly);
+		
 		/** Se ha transformado el caramelo de la posición (fila, col) en uno de otro tipo */
 		void onTransformCandy(StuffList candy, int fila, int col);
 	}

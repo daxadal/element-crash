@@ -90,6 +90,7 @@ public class Assets {
 		//TODO gelatinaR1 = new Texture("iconos/candy images/gelatina/gelatinaR.png");
 		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB2.png");
 		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB1.png");
+		gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
 		
 		//Decoraciones y animaciones
 		back = new Texture("iconos/candy images/fondo.png");
@@ -243,6 +244,7 @@ public class Assets {
 	public static Texture gelatinaAz2;
 	public static Texture gelatinaB2;
 	public static Texture gelatinaB1;
+	public static Texture gelatinaFondo;
 
 	public static Texture back;
 	

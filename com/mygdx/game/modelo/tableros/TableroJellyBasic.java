@@ -103,8 +103,10 @@ public class TableroJellyBasic extends Tablero {
 		tableroChuches[fila][col] = null;
 		if (animateDestroy) {
 			for (Observer o: obs) o.onDestroyCandy(fila, col);
-			if(tableroGelatinas[fila][col]>0)
+			if(tableroGelatinas[fila][col]>0) {
 				tableroGelatinas[fila][col]--;
+				for (Observer o: obs) o.onDestroyJelly(fila, col, intToWhiteJelly(tableroGelatinas[fila][col]));
+			}
 		}
 	}
 
@@ -113,16 +115,24 @@ public class TableroJellyBasic extends Tablero {
 		return tableroChuches[i][j];
 	}
 	
-	@Override
-	public StuffPile getPileOfElementsAt(int fila, int col)
-			throws ArrayIndexOutOfBoundsException {
+	protected static StuffList intToWhiteJelly(int jellyInt) {
 		StuffList jelly;
-		switch (tableroGelatinas[fila][col]) {
+		switch (jellyInt) {
 			case 2: jelly = StuffList.GELATINA_NORMAL_2; break;
 			case 1: jelly = StuffList.GELATINA_NORMAL_1; break;
 			default: jelly = null;
 		}
-		return new StuffPile(tableroChuches[fila][col].getID(), jelly);
+		return jelly;
+	}
+	
+	@Override
+	public StuffPile getPileOfElementsAt(int fila, int col)
+			throws ArrayIndexOutOfBoundsException {
+		
+		return new StuffPile(
+				tableroChuches[fila][col].getID(), 
+				intToWhiteJelly(tableroGelatinas[fila][col])
+				);
 	}
 
 	@Override

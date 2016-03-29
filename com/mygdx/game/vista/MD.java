@@ -28,8 +28,8 @@ public class MD {
 		MD.filas = filas;
 		MD.cols = cols;
 		
-		if(gameType == GameType.STEAL_2P)
-			cols = cols+2;
+		//if(gameType == GameType.STEAL_2P)
+		//	cols = cols+2;
 		
 		//Dim
 		if( width/cols < height/filas)
@@ -39,12 +39,10 @@ public class MD {
 		
 		//Origin
 		switch (gameType) {
-			case BASIC:	MD.originX = 0;
-						MD.originY = height;
-						break;
-			case STEAL_2P:	MD.originX = MD.dim;
-							MD.originY = height;
-							break;
+			case BASIC:	case JELLY_BASIC: case STEAL_2P:	
+				MD.originX = 0;
+				MD.originY = height;
+				break;
 		}
 		
 	}

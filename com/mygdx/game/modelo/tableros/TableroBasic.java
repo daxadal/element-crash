@@ -62,6 +62,18 @@ public class TableroBasic extends Tablero {
 	}
 
 	@Override
+	public boolean intercambiar(int fila1, int col1, int fila2, int col2, boolean intercambioLibre) {
+		boolean intercambioExitoso = false;
+		if (	intercambioLibre
+				|| (fila1 == fila2 && Math.abs(col1-col2) == 1 )
+				|| (col1 == col2 && Math.abs(fila1-fila2) == 1 )	)
+			intercambioExitoso = super.intercambioGenerico(fila1, col1, fila2, col2);
+		
+		for (Observer o: obs) o.endOfInteraction();
+		return intercambioExitoso;
+	}
+
+	@Override
 	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
 		boolean creado = false;
 		if (tablero[fila][col] == null) {
@@ -79,6 +91,9 @@ public class TableroBasic extends Tablero {
 		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
 	}
 
+
+	@Override
+	public void efectoOndaExpansiva(int fila, int col) {}
 
 	@Override
 	public void destruir(int fila, int col) { 

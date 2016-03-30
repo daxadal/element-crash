@@ -37,7 +37,7 @@ public class Controlador {
 	 * @return True si el intecambio tiene éxito. False si es fallido.
 	 */
 	public void intercambiar(int fila1, int col1, int fila2, int col2) {
-		boolean hay_cambios =  tablero.intercambiar(fila1, col1, fila2, col2);
+		boolean hay_cambios =  tablero.intercambiar(fila1, col1, fila2, col2, false);
 		if (hay_cambios)
 			vista.updateData(tablero);
 	}

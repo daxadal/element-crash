@@ -9,13 +9,16 @@ import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 import com.mygdx.game.modelo.caramelos.Color;
 import com.mygdx.game.modelo.caramelos.Ingrediente;
+import com.mygdx.game.modelo.tableros.Tablero.Observer;
+import com.mygdx.game.modelo.tableros.Tablero.SegmentoCol;
+import com.mygdx.game.modelo.tableros.Tablero.SegmentoFila;
 
 /**
- * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece al jugador rojo,
+ * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece inicialmente al jugador rojo,
  * y la mitad derecha al jugador azul
  *
  */
-public class TableroRobo2Jug extends Tablero {
+public class TableroJelly2Jug extends Tablero {
 	
 	/** Almacena una chuchería y sus coordenadas en el tablero para poder
 	 * destruirla más tarde */
@@ -54,31 +57,38 @@ public class TableroRobo2Jug extends Tablero {
 	 * Crea un tablero básico con caramelos aleatorios, asegurando
 	 * que no aparecen 3 de un mismo color ni en fila ni en columna
 	 */
-	public TableroRobo2Jug() {
+	public TableroJelly2Jug() {
 		this.destruirMasTarde = new Vector<ChucheYcoord>();
 		this.FILAS = 8;
 		this.COLS= 12;
-		this.restantesParaIngAzul = RESTANTES_PRIMERO;
-		this.restantesParaIngRojo = RESTANTES_PRIMERO;
-		this.ingAzulesEnTablero = 0;
-		this.ingRojosEnTablero = 0;
-		//this.ingEnTablero = new Vector<Chucheria>();
-		this.puntosRojo = 0;
-		this.puntosAzul = 0;
-
+		this.gelAzulesEnTablero = FILAS*COLS/2;
+		this.gelRojasEnTablero = FILAS*COLS/2;
 		this.isRedPlayersTurn = true;
-		this.tablero = new Chucheria[FILAS][COLS];
+		
+		this.tableroChuches = new Chucheria[FILAS][COLS];
 		for (int i=0; i<FILAS; i++) {
 			for (int j=0; j<COLS; j++) {
 				do {
-					tablero[i][j] = new Caramelo();
+					tableroChuches[i][j] = new Caramelo();
 				}while (!valido(i,j));
+			}
+		}
+		
+		this.tableroGelatinas = new int[FILAS][COLS];
+		for (int j=0; j<COLS/2; j++) {
+			for (int i=0; i<FILAS; i++) {
+					tableroGelatinas[i][j] = 1;
+			}
+		}
+		for (int j=COLS/2; j<COLS; j++) {
+			for (int i=0; i<FILAS; i++) {
+					tableroGelatinas[i][j] = 4;
 			}
 		}
 	}
 	
 	@Override
-	public boolean intercambiar(int fila1, int col1, int fila2, int col2, boolean intercambioLibre) {
+	public boolean intercambiar(int fila1, int col1, int fila2, int col2, boolean intercambioLibre) { //TODO Reimplementar. Añadir onda expansiva
 		boolean intercambioExitoso = false;
 		if (	intercambioLibre
 				|| (fila1 == fila2 && Math.abs(col1-col2) == 1 )
@@ -111,8 +121,8 @@ public class TableroRobo2Jug extends Tablero {
 	@Override
 	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
 		boolean creado = false;
-		if (tablero[fila][col] == null) {
-			tablero[fila][col] = candy;
+		if (tableroChuches[fila][col] == null) {
+			tableroChuches[fila][col] = candy;
 			for (Observer o: obs) o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
 			creado = true;
 		}
@@ -122,30 +132,28 @@ public class TableroRobo2Jug extends Tablero {
 
 	@Override
 	public void introducir(Chucheria candy, int fila, int col, boolean animateTransform) {
-		tablero[fila][col] = candy;
+		tableroChuches[fila][col] = candy;
 		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
 	}
 	
 	@Override
-	public void efectoOndaExpansiva(int fila, int col) {}
-
-	@Override
-	public void destruir(int fila, int col) {
-		if (tablero[fila][col] != null) {
-			boolean debeDestruirse = tablero[fila][col].destruir(this, fila, col);
+	public void destruir(int fila, int col) { //TODO destruir
+		if (tableroChuches[fila][col] != null) {
+			boolean debeDestruirse = tableroChuches[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
-				if (tablero[fila][col].getID() == StuffList.CEREZA_AZUL) {
+			
+				if (tableroChuches[fila][col].getID() == StuffList.CEREZA_AZUL) {
 					this.puntosAzul++;
-					this.ingAzulesEnTablero--;
+					this.gelAzulesEnTablero--;
 					//this.ingEnTablero.remove(tablero[fila][col]);
-					if (this.ingAzulesEnTablero == 0 && this.restantesParaIngAzul > RESTANTES_PRIMERO)
+					if (this.gelAzulesEnTablero == 0 && this.restantesParaIngAzul > RESTANTES_PRIMERO)
 						this.restantesParaIngAzul = RESTANTES_PRIMERO;
 				}
-				else if (tablero[fila][col].getID() == StuffList.CEREZA_ROJA) {
+				else if (tableroChuches[fila][col].getID() == StuffList.CEREZA_ROJA) {
 					this.puntosRojo++;
-					this.ingRojosEnTablero--;
+					this.gelRojasEnTablero--;
 					//this.ingEnTablero.remove(tablero[fila][col]);
-					if (this.ingRojosEnTablero == 0 && this.restantesParaIngRojo > RESTANTES_PRIMERO)
+					if (this.gelRojasEnTablero == 0 && this.restantesParaIngRojo > RESTANTES_PRIMERO)
 						this.restantesParaIngRojo = RESTANTES_PRIMERO;
 				}
 				this.suprimir(fila, col, false);
@@ -157,37 +165,47 @@ public class TableroRobo2Jug extends Tablero {
 	}
 
 	@Override
-	public void suprimir(int fila, int col, boolean animateDestroy) {
-		tablero[fila][col] = null;
+	public void suprimir(int fila, int col, boolean animateDestroy) { //TODO suprimir
+		tableroChuches[fila][col] = null;
 		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
 	}
 
 	@Override
 	public Chucheria getElementAt(int i, int j) throws ArrayIndexOutOfBoundsException {
-		return tablero[i][j];
+		return tableroChuches[i][j];
+	}
+	
+	protected static StuffList intToColorJelly(int jellyInt) {
+		StuffList jelly;
+		switch (jellyInt) {
+			case 1: jelly = StuffList.GELATINA_ROJA_2; break;
+			case 2: jelly = StuffList.GELATINA_ROJA_1; break;
+			case 3: jelly = StuffList.GELATINA_AZUL_1; break;
+			case 4: jelly = StuffList.GELATINA_AZUL_2; break;
+			default: jelly = null;
+		}
+		return jelly;
 	}
 	
 	@Override
 	public StuffPile getPileOfElementsAt(int fila, int col)
 			throws ArrayIndexOutOfBoundsException {
-		StuffList jelly;
-		if (col<COLS/2) 
-			jelly = StuffList.GELATINA_ROJA_2;
-		else 
-			jelly = StuffList.GELATINA_AZUL_2;
-		return new StuffPile(tablero[fila][col].getID(), jelly);
+		return new StuffPile(
+				tableroChuches[fila][col].getID(), 
+				intToColorJelly(tableroGelatinas[fila][col])
+				);
 	}
-	
+
 	@Override
 	public GameType getGameType() {
-		return GameType.STEAL_2P;
+		return GameType.JELLY_2P;
 	}
 		
 	@Override
 	protected void swap(int fila1, int col1, int fila2, int col2) {
-		Chucheria aux = tablero[fila1][col1];
-		tablero[fila1][col1] = tablero[fila2][col2];
-		tablero[fila2][col2] = aux;	
+		Chucheria aux = tableroChuches[fila1][col1];
+		tableroChuches[fila1][col1] = tableroChuches[fila2][col2];
+		tableroChuches[fila2][col2] = aux;	
 		for (Observer o: obs) o.onSwapCandy(fila1, col1, fila2, col2);
 	}
 
@@ -205,10 +223,8 @@ public class TableroRobo2Jug extends Tablero {
 		Vector<SegmentoFila> combinFila = sacarCombinFilas();
 		Vector<SegmentoCol> combinCol = sacarCombinCols();
 		
-		boolean ingrDestruidos = buscarIngredientesParaDestruir();
-		
 		if (combinFila.isEmpty() && combinCol.isEmpty())
-			return ingrDestruidos;
+			return false;
 		else {
 			destruir(combinFila, combinCol);
 			crearEspecialesBarrido(combinFila, combinCol);
@@ -229,31 +245,7 @@ public class TableroRobo2Jug extends Tablero {
 			ch.destruir(this);  //... y destruimos lo que tengamos pendiente
 	}
 
-	/**
-	 * Recorre el tablero destruyendo los ingredientes que estén en la
-	 * zona de su mismo color
-	 */
-	private boolean buscarIngredientesParaDestruir() {
-		boolean modificado = false;
-		System.out.print("Iniciando busqueda de ingredientes... ");
-		for (int i=0; i<FILAS; i++) { //Para cada fila
-			for (int j=0; j<COLS/2; j++) {//para cada casilla de cada fila
-				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
-					modificado = true;
-					destruir(i, j);
-				}
-			}
-			for (int j=COLS/2; j<COLS; j++) {//para cada casilla de cada fila
-				if (tablero[i][j].getID() == StuffList.CEREZA_AZUL) {
-					modificado = true;
-					destruir(i, j);
-				}
-			}
-		}
-		System.out.println("Busqueda finalizada!");
-		return modificado;
-	}
-
+	
 	/**
 	 * Rellena el tablero, haciendo que los caramelos caigan (hacia la derecha)
 	 * y posteriormente se creen caramelos nuevos para rellenar los huecos
@@ -264,12 +256,12 @@ public class TableroRobo2Jug extends Tablero {
 			int jRec = COLS-1; //Hueco (donde coloca)
 			
 			while (jExtr>=0) { //De dcha a izda hacemos caer
-				if (tablero[i][jExtr] == null)
+				if (tableroChuches[i][jExtr] == null)
 					jExtr--;
 				else if (jRec != jExtr){
-					tablero[i][jRec] = tablero[i][jExtr]; //Colocamos en el hueco
+					tableroChuches[i][jRec] = tableroChuches[i][jExtr]; //Colocamos en el hueco
 					for (Observer o :obs) o.onFallCandy(i, i, jExtr, jRec); //Avisamos de la caida
-					tablero[i][jExtr] = null;
+					tableroChuches[i][jExtr] = null;
 					jExtr--;
 					jRec--;
 				}
@@ -280,16 +272,7 @@ public class TableroRobo2Jug extends Tablero {
 			}
 			
 			while (jRec>=0) { //Rellenamos sobrantes
-				if (this.restantesParaIngAzul == 0) {
-					crear(new Ingrediente(Color.AZUL), i, i, jExtr, jRec);
-					//this.ingEnTablero.add(tablero[i][jRec]);
-					this.ingAzulesEnTablero++;
-					this.restantesParaIngAzul = RESTANTES_SIGUIENTES;
-				}
-				else {
-					this.restantesParaIngAzul--;
-					crear(new Caramelo(), i, i, jExtr, jRec);
-				}
+				crear(new Caramelo(), i, i, jExtr, jRec);
 				jRec--;
 				jExtr--;
 			}
@@ -308,12 +291,12 @@ public class TableroRobo2Jug extends Tablero {
 			int jRec = 0; //Hueco (donde coloca)
 			
 			while (jExtr<COLS) { //De dcha a izda hacemos caer
-				if (tablero[i][jExtr] == null)
+				if (tableroChuches[i][jExtr] == null)
 					jExtr++;
 				else if (jRec != jExtr){
-					tablero[i][jRec] = tablero[i][jExtr]; //Colocamos en el hueco
+					tableroChuches[i][jRec] = tableroChuches[i][jExtr]; //Colocamos en el hueco
 					for (Observer o :obs) o.onFallCandy(i, i, jExtr, jRec); //Avisamos de la caida
-					tablero[i][jExtr] = null;
+					tableroChuches[i][jExtr] = null;
 					jExtr++;
 					jRec++;
 				}
@@ -324,16 +307,7 @@ public class TableroRobo2Jug extends Tablero {
 			}
 			
 			while (jRec<COLS) { //Rellenamos sobrantes
-				if (this.restantesParaIngRojo == 0) {
-					crear(new Ingrediente(Color.ROJO), i, i, jExtr, jRec);
-					//this.ingEnTablero.add(tablero[i][jRec]);
-					this.ingRojosEnTablero++;
-					this.restantesParaIngRojo = RESTANTES_SIGUIENTES;
-				}
-				else {
-					this.restantesParaIngRojo--;
-					crear(new Caramelo(), i, i, jExtr, jRec);
-				}
+				crear(new Caramelo(), i, i, jExtr, jRec);
 				jRec++;
 				jExtr++;
 			}
@@ -343,11 +317,13 @@ public class TableroRobo2Jug extends Tablero {
 	}
 	
 	protected void addToDestruirMasTarde(int fila, int col) {
-		this.destruirMasTarde.addElement(new ChucheYcoordRobo2Jug(tablero[fila][col], fila, col));
+		this.destruirMasTarde.addElement(new ChucheYcoordRobo2Jug(tableroChuches[fila][col], fila, col));
 	}
 	
 	/**Matriz de chucherías que representa el tablero, representado como (fila,columna)*/
-	private Chucheria[][] tablero;
+	private Chucheria[][] tableroChuches;
+	/**Matriz de gelatinas del tablero, representado como (fila,columna)*/
+	private int[][] tableroGelatinas;
 	
 	/** Las chucherías con varias fases de destrucciónse registran aquí
 	 *  para volver a destruirse cuando el tablero esté estable*/
@@ -355,24 +331,11 @@ public class TableroRobo2Jug extends Tablero {
 	
 	/** Indica si el jugador rojo (izquierdo) está jugando */
 	private boolean isRedPlayersTurn;
-	/** Número de caramelos por destruir para que salga un ingrediente rojo */
-	private int restantesParaIngRojo;
-	/** Número de caramelos por destruir para que salga un ingrediente azul */
-	private int restantesParaIngAzul;
-	/** Número de ingredientes rojos en el tablero */
-	private int ingRojosEnTablero;
-	/** Número de ingredientes azules en el tablero */
-	private int ingAzulesEnTablero;
-	/** Puntos del jugador rojo */
-	private int puntosRojo;
-	/** Puntos del jugador azul */
-	private int puntosAzul;
-	/** Caramelos que es necesario destruir para que aparezca un
-	 * ingrediente en el tablero cuando <b>NO</b> hay otro de ese color*/
-	private static final int RESTANTES_PRIMERO = 6;
-	/** Caramelos que son necesarios destruir para que aparezca un
-	 * ingrediente en el tablero cuando <b>YA</b> hay otro de ese color*/
-	private static final int RESTANTES_SIGUIENTES = 60;
+	/** Número de gelatinas rojas en el tablero */
+	private int gelRojasEnTablero;
+	/** Número de gelatinas azules en el tablero */
+	private int gelAzulesEnTablero;
+
 	
 
 }

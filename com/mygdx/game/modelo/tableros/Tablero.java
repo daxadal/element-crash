@@ -128,20 +128,10 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	}
 	
 	/**
-	 * Intercambia dos casillas cualesquiera (no necesariamente contiguas) y:
-	 * <ol>
-	 * <li> En caso de que sean caramelos especiales y el intercambio produzca algun efecto, 
-	 * se ejecuta y se destruyen los caramelos pertinentes.
-	 * <li> En caso contrario, se intenta buscar combinaciones de 3 o más. Si la búsqueda 
-	 * tiene éxito, se destruyen los caramelos pertinentes y se crean caramelos especiales
-	 * en caso necesario
-	 * <li> En caso de que haya ocurrido algo de lo anterior (y por tanto, se hayan destruido 
-	 * caramelos) se rellena el tablero de forma pertinente. En caso de que se generen más 
-	 * combinaciones, se repiten los pasos 2 y 3.
-	 * </ol>
+	 * Intercambia dos casillas cualesquiera contiguas. Puede hacer uso del algoritmo de
+	 * intercambio generico implementado en esta clase. Al final debe realizarse un
+	 * "<code>for (Observer o: obs) o.endOfInteraction();</code>" <br><br>
 	 * 
-	 * <b>NOTA:</b> Si el usuario de esta clase quiere que las casillas que se intercambian sean 
-	 * contiguas, debe comprobarlo antes de realizar la llamada a esta función. <br>
 	 * <b>NOTA:</b> En caso de que el intercambio sea fallido, se restablecen las posiciones 
 	 * de los caramelos intercambiados. <br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites.<br>
@@ -150,55 +140,11 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * @param col1 Columna del primer caramelo a intercambiar
 	 * @param fila2 Fila del segundo caramelo a intercambiar
 	 * @param col2 Columna del segundo caramelo a intercambiar
+	 * @param intercambioLibre si es cierto, permite intercambiar casillas cualesquiera
 	 * @return True si el intecambio tiene éxito. False si es fallido.
+	 * @see Tablero#intercambioGenerico(int, int, int, int)
 	 */
-	public boolean intercambiar(int fila1, int col1, int fila2, int col2) {
-		swap(fila1, col1, fila2, col2);
-		
-		//Llamar efectos especiales
-		boolean hay_especial = this.getElementAt(fila1,col1).efectoIntercambio(
-				this, fila1, col1, fila2, col2, true); //Efecto intercambio 1er caramelo
-		if (!hay_especial)
-			hay_especial = this.getElementAt(fila2,col2).efectoIntercambio(
-					this, fila2, col2, fila1, col1, false); //Efecto intercambio 2o caramelo
-		
-		//Combinar (si no ha habido efecto especial)
-		boolean comb1 = false; 
-		boolean comb2 = false;
-		if (!hay_especial) {
-			if(this.getElementAt(fila1,col1) != null) 
-				comb1 =  this.getElementAt(fila1,col1).combinarDeIntercambio(this, fila1, col1);
-			if(this.getElementAt(fila2,col2) != null) 
-				comb2 =  this.getElementAt(fila2,col2).combinarDeIntercambio(this, fila2, col2);
-		}
-		
-		//Rellenar (si ha habido efecto o combinacion) o restablecer (en caso contrario)
-		if (hay_especial || comb1 || comb2) {
-			boolean inestable = true;
-			while (inestable) {
-				rellenar();
-				inestable = combinarDeBarrido(); //Cierto si sale alguna combinacion
-			}
-			//Destruir envueltos y rellenar
-			inestable = this.quedaPorDestruir();
-			while (inestable) {
-				this.destruirPendientes();
-				while (inestable) {
-					rellenar();
-					inestable = combinarDeBarrido(); //Cierto si sale alguna combinacion
-				}
-				inestable = this.quedaPorDestruir();
-			}
-	
-		}
-		else {
-			swap(fila1, col1, fila2, col2);
-			
-		}
-		
-		for (Observer o: obs) o.endOfInteraction();
-		return hay_especial || comb1 || comb2;
-	}
+	public abstract boolean intercambiar(int fila1, int col1, int fila2, int col2, boolean intercambioLibre);
 
 	/**
 	 * Crea un caramelo en una casilla. La casilla debe estar vacía para
@@ -244,6 +190,18 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 *  (normal, poer rallado, por envuelto, por bomba de color...)
 	 */
 	public abstract void destruir(int fila, int col);
+	
+	/**
+	 * Indica que al lado de la casilla se ha destruido una chuchería.
+	 * Dependiendo de lo que contenga la casilla, puede tener distintos efectos (o ninguno),
+	 * ya que puede implicar la destrucción de otros caramelos, gelatinas o coberturas. 
+	 * Llama a la función efectoIntercambio() de la chuchería <br> <br>
+	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
+	 * cambio, sí comprueba que el elemento a destruir no sea nulo
+	 * @param fila Fila de la casilla
+	 * @param col Columna de la casilla
+	 */
+	public abstract void efectoOndaExpansiva(int fila, int col);
 
 	/**
 	 * Destruye una casilla, sin tener encuenta los efectos laterales que pueda tenga la chuchería. 
@@ -324,6 +282,77 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * que requieren dos fases de destrucción (envueltos)*/
 	protected abstract void destruirPendientes();
 	
+	/**
+	 * Intercambia dos casillas cualesquiera (no necesariamente contiguas) y:
+	 * <ol>
+	 * <li> En caso de que sean caramelos especiales y el intercambio produzca algun efecto, 
+	 * se ejecuta y se destruyen los caramelos pertinentes.
+	 * <li> En caso contrario, se intenta buscar combinaciones de 3 o más. Si la búsqueda 
+	 * tiene éxito, se destruyen los caramelos pertinentes y se crean caramelos especiales
+	 * en caso necesario
+	 * <li> En caso de que haya ocurrido algo de lo anterior (y por tanto, se hayan destruido 
+	 * caramelos) se rellena el tablero de forma pertinente. En caso de que se generen más 
+	 * combinaciones, se repiten los pasos 2 y 3.
+	 * </ol>
+	 * 
+	 * <b>NOTA:</b> Si el usuario de esta clase quiere que las casillas que se intercambian sean 
+	 * contiguas, debe comprobarlo antes de realizar la llamada a esta función. <br>
+	 * <b>NOTA:</b> En caso de que el intercambio sea fallido, se restablecen las posiciones 
+	 * de los caramelos intercambiados. <br>
+	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites.<br>
+	 * 
+	 * @param fila1 Fila del primer caramelo a intercambiar
+	 * @param col1 Columna del primer caramelo a intercambiar
+	 * @param fila2 Fila del segundo caramelo a intercambiar
+	 * @param col2 Columna del segundo caramelo a intercambiar
+	 * @return True si el intecambio tiene éxito. False si es fallido.
+	 */
+	protected boolean intercambioGenerico(int fila1, int col1, int fila2, int col2) { //Modificar intercambiar para comprobar casillas contiguas
+		swap(fila1, col1, fila2, col2);
+		
+		//Llamar efectos especiales
+		boolean hay_especial = this.getElementAt(fila1,col1).efectoIntercambio(
+				this, fila1, col1, fila2, col2, true); //Efecto intercambio 1er caramelo
+		if (!hay_especial)
+			hay_especial = this.getElementAt(fila2,col2).efectoIntercambio(
+					this, fila2, col2, fila1, col1, false); //Efecto intercambio 2o caramelo
+		
+		//Combinar (si no ha habido efecto especial)
+		boolean comb1 = false; 
+		boolean comb2 = false;
+		if (!hay_especial) {
+			if(this.getElementAt(fila1,col1) != null) 
+				comb1 =  this.getElementAt(fila1,col1).combinarDeIntercambio(this, fila1, col1);
+			if(this.getElementAt(fila2,col2) != null) 
+				comb2 =  this.getElementAt(fila2,col2).combinarDeIntercambio(this, fila2, col2);
+		}
+		
+		//Rellenar (si ha habido efecto o combinacion) o restablecer (en caso contrario)
+		if (hay_especial || comb1 || comb2) {
+			boolean inestable = true;
+			while (inestable) {
+				rellenar();
+				inestable = combinarDeBarrido(); //Cierto si sale alguna combinacion
+			}
+			//Destruir envueltos y rellenar
+			inestable = this.quedaPorDestruir();
+			while (inestable) {
+				this.destruirPendientes();
+				while (inestable) {
+					rellenar();
+					inestable = combinarDeBarrido(); //Cierto si sale alguna combinacion
+				}
+				inestable = this.quedaPorDestruir();
+			}
+	
+		}
+		else {
+			swap(fila1, col1, fila2, col2);		
+		}
+		
+		return hay_especial || comb1 || comb2;
+	}
+
 	/**
 	 * Condición usada en el constructor. Determina, al generar el tablero,
 	 * si al añadir un caramelo se crea combinación con alguno ya existente

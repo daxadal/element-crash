@@ -3,7 +3,6 @@ package com.mygdx.game.modelo.tableros;
 import com.mygdx.game.controlador.StuffList;
 import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Chucheria;
-import com.mygdx.game.modelo.tableros.Tablero.Observer;
 
 public class TableroJellyCoverBasic extends TableroJellyBasic {
 	
@@ -31,9 +30,9 @@ public class TableroJellyCoverBasic extends TableroJellyBasic {
 	}
 	
 	@Override
-	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
+	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col, boolean animateTransform) {
 		if (tableroCoberturas[fila][col] > 0)
-			return super.crear(candy, filaSpawn, fila, colSpawn, col);
+			return super.crear(candy, filaSpawn, fila, colSpawn, col, animateTransform);
 		else
 			return false;
 	}
@@ -61,8 +60,7 @@ public class TableroJellyCoverBasic extends TableroJellyBasic {
 	}
 	
 	@Override
-	public StuffPile getPileOfElementsAt(int fila, int col)
-			throws ArrayIndexOutOfBoundsException {
+	public StuffPile getPileOfElementsAt(int fila, int col) {
 		
 		return new StuffPile(
 				tableroChuches[fila][col].getID(), 

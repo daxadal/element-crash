@@ -34,12 +34,12 @@ public class TableroRobo2Jug extends Tablero {
 				if (isRedPlayersTurn) {
 					while (candy != tablero.getElementAt(fila, col))
 						col--;
-					candy.destruir(tablero, fila, col);
+					tablero.destruir(fila, col);
 				}
 				else {
 					while (candy != tablero.getElementAt(fila, col))
 						col++;
-					candy.destruir(tablero, fila, col);
+					tablero.destruir(fila, col);
 				}
 			}
 			catch (ArrayIndexOutOfBoundsException ex) {}	
@@ -109,11 +109,18 @@ public class TableroRobo2Jug extends Tablero {
 	}
 
 	@Override
-	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
+	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col, boolean animateTransform) {
 		boolean creado = false;
 		if (tablero[fila][col] == null) {
 			tablero[fila][col] = candy;
-			for (Observer o: obs) o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
+			if (animateTransform) {
+				for (Observer o: obs) 
+					o.onTransformCandy(fila, col, candy.getID()); //Avisamos de la transformación
+			}
+			else {
+				for (Observer o: obs)
+					o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
+			}
 			creado = true;
 		}
 		return creado;
@@ -123,7 +130,7 @@ public class TableroRobo2Jug extends Tablero {
 	@Override
 	public void introducir(Chucheria candy, int fila, int col, boolean animateTransform) {
 		tablero[fila][col] = candy;
-		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
+		if (animateTransform) for (Observer o: obs) o.onTransformCandy(fila, col, candy.getID());
 	}
 	
 	@Override
@@ -162,19 +169,18 @@ public class TableroRobo2Jug extends Tablero {
 	}
 
 	@Override
-	public Chucheria getElementAt(int i, int j) throws ArrayIndexOutOfBoundsException {
+	public Chucheria getElementAt(int i, int j) {
 		return tablero[i][j];
 	}
 	
 	@Override
-	public StuffPile getPileOfElementsAt(int fila, int col)
-			throws ArrayIndexOutOfBoundsException {
+	public StuffPile getPileOfElementsAt(int fila, int col) {
 		StuffList jelly;
 		if (col<COLS/2) 
 			jelly = StuffList.GELATINA_ROJA_2;
 		else 
 			jelly = StuffList.GELATINA_AZUL_2;
-		return new StuffPile(tablero[fila][col].getID(), jelly);
+		return new StuffPile(tablero[fila][col].getID(), jelly, StuffList.SIN_COBERTURA);
 	}
 	
 	@Override
@@ -280,14 +286,14 @@ public class TableroRobo2Jug extends Tablero {
 			
 			while (jRec>=0) { //Rellenamos sobrantes
 				if (this.restantesParaIngAzul == 0) {
-					crear(new Ingrediente(Color.AZUL), i, i, jExtr, jRec);
+					crear(new Ingrediente(Color.AZUL), i, i, jExtr, jRec, false);
 					//this.ingEnTablero.add(tablero[i][jRec]);
 					this.ingAzulesEnTablero++;
 					this.restantesParaIngAzul = RESTANTES_SIGUIENTES;
 				}
 				else {
 					this.restantesParaIngAzul--;
-					crear(new Caramelo(), i, i, jExtr, jRec);
+					crear(new Caramelo(), i, i, jExtr, jRec, false);
 				}
 				jRec--;
 				jExtr--;
@@ -324,14 +330,14 @@ public class TableroRobo2Jug extends Tablero {
 			
 			while (jRec<COLS) { //Rellenamos sobrantes
 				if (this.restantesParaIngRojo == 0) {
-					crear(new Ingrediente(Color.ROJO), i, i, jExtr, jRec);
+					crear(new Ingrediente(Color.ROJO), i, i, jExtr, jRec, false);
 					//this.ingEnTablero.add(tablero[i][jRec]);
 					this.ingRojosEnTablero++;
 					this.restantesParaIngRojo = RESTANTES_SIGUIENTES;
 				}
 				else {
 					this.restantesParaIngRojo--;
-					crear(new Caramelo(), i, i, jExtr, jRec);
+					crear(new Caramelo(), i, i, jExtr, jRec, false);
 				}
 				jRec++;
 				jExtr++;

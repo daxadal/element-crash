@@ -37,7 +37,7 @@ public class Controlador {
 	 * @return True si el intecambio tiene éxito. False si es fallido.
 	 */
 	public void intercambiar(int fila1, int col1, int fila2, int col2) {
-		boolean hay_cambios =  tablero.intercambiar(fila1, col1, fila2, col2, false);
+		boolean hay_cambios =  tablero.intercambiar(fila1, col1, fila2, col2, true);
 		if (hay_cambios)
 			vista.updateData(tablero);
 	}
@@ -64,6 +64,16 @@ public class Controlador {
 	 */
 	public GameType getGameType() {
 		return tablero.getGameType();
+	}
+	
+	/** @return Numero de filas del tablero */
+	public int getRows() {
+		return tablero.getRows();
+	}
+
+	/** @return Numero de columnas del tablero */
+	public int getColumns() {
+		return tablero.getColumns();
 	}
 	
 	private Tablero tablero;

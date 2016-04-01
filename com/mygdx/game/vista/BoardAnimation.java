@@ -137,24 +137,31 @@ public class BoardAnimation implements Tablero.Observer{
 		interactionQueue = new ConcurrentLinkedQueue<LinkedList<AnimationTask>>();
 		actualList = new LinkedList<AnimationCell>();
 		nextToQueueList = new LinkedList<AnimationTask>();
-		animCell = new AnimationCell[MD.filas()][MD.cols()];
 		lastAnimation = AnimationType.NONE;
-		gameType = controlTablero.getGameType();
 		
-		if (gameType == GameType.JELLY_BASIC)
-			jellyAnimCell = new AnimationCell[MD.filas()][MD.cols()];
+		gameType = controlTablero.getGameType();
+		FILAS = controlTablero.getRows();
+		COLS = controlTablero.getColumns();
+		
+		animCell = new AnimationCell[FILAS][COLS];
+		if (gameType == GameType.JELLY_BASIC
+				|| gameType == GameType.JELLY_2P
+				|| gameType == GameType.JELLY_COVER_2P)
+			jellyAnimCell = new AnimationCell[FILAS][COLS];
 		
 		
 		StuffPile pileOfThings;
 		Texture icon;
 		
 		
-		for (int j=0; j<MD.filas(); j++) //Para cada fila
-			for (int i=0; i<MD.cols(); i++) {//para cada casilla de cada fila
+		for (int j=0; j<FILAS; j++) //Para cada fila
+			for (int i=0; i<COLS; i++) {//para cada casilla de cada fila
 				pileOfThings = controlTablero.getPileOfElementsAt(j, i);
 				icon = Assets.getIcon(pileOfThings.getCandy());
 				animCell[j][i] = new AnimationCell(j, i, icon);
-				if (gameType == GameType.JELLY_BASIC) {
+				if (gameType == GameType.JELLY_BASIC
+						|| gameType == GameType.JELLY_2P
+						|| gameType == GameType.JELLY_COVER_2P) {
 					icon = Assets.getIcon(pileOfThings.getJelly());
 					jellyAnimCell[j][i] = new AnimationCell(j,i,icon);
 				}
@@ -167,11 +174,13 @@ public class BoardAnimation implements Tablero.Observer{
 	private void endOfInteractionGroup() {
 		interactionQueue.add(nextToQueueList);
 		nextToQueueList = new LinkedList<AnimationTask>();
+		//XXX TEST
+		System.out.println(" <----- endOfInteractionGroup ----> ");
 	}
 
 	@Override
 	public void endOfInteraction() {
-		this.endOfInteractionGroup();		
+		this.endOfInteractionGroup();
 	}
 
 	@Override
@@ -201,6 +210,9 @@ public class BoardAnimation implements Tablero.Observer{
 		}
 		
 		this.lastAnimation = AnimationType.SWAP_FREE;
+		
+		//XXX TEST
+		System.out.println("Swap: (" + fila1 + "," + col1 + ") <-> (" + fila2 + "," + col2 +")");
 	}
 
 	@Override
@@ -227,6 +239,9 @@ public class BoardAnimation implements Tablero.Observer{
 		}
 		
 		this.lastAnimation = AnimationType.FALL;
+		
+		//XXX TEST
+		System.out.println("Fall: (" + filaIni + "," + colIni + ") -> (" + filaFin + "," + colFin +")");
 	}
 
 	@Override
@@ -252,6 +267,9 @@ public class BoardAnimation implements Tablero.Observer{
 		}
 		
 		this.lastAnimation = AnimationType.FALL;
+		
+		//XXX TEST
+		System.out.println("Create: (" + filaSpawn + "," + colSpawn + ") <-> (" + fila + "," + col +")");
 	}
 
 	@Override
@@ -265,19 +283,25 @@ public class BoardAnimation implements Tablero.Observer{
 			));
 				
 		this.lastAnimation = AnimationType.DESTROY;
+		
+		//XXX TEST
+		System.out.println("Destroy candy: (" + fila + "," + col + ")");
 	}
 	
 	@Override
-	public void onTransformCandy(StuffList candy, int fila, int col) {
+	public void onTransformCandy(int fila, int col, StuffList newCandy) {
 		// TODO Implementacion provisional
 		if (this.lastAnimation != AnimationType.FALL)
 			this.endOfInteractionGroup();
 
 		this.nextToQueueList.add(new AnimationTask(
-				AnimationType.FALL, fila, col, fila, col, Assets.getIcon(candy)
+				AnimationType.FALL, fila, col, fila, col, Assets.getIcon(newCandy)
 			));
 
 		this.lastAnimation = AnimationType.FALL;
+		
+		//XXX TEST
+		System.out.println("Transform candy: (" + fila + "," + col + ") -> " + newCandy );
 		
 	}
 
@@ -291,6 +315,24 @@ public class BoardAnimation implements Tablero.Observer{
 			));
 		
 		this.lastAnimation = AnimationType.DESTROY;
+		
+		//XXX TEST
+		System.out.println("Destroy Jelly: (" + fila + "," + col + ") -> " + newJelly );
+	}
+
+	@Override
+	public void onDestroyCover(int fila, int col, StuffList newCover) {
+		/* TODO implementar destrucción de coberturas
+		if (this.lastAnimation != AnimationType.DESTROY)
+			this.endOfInteractionGroup();
+		
+		this.nextToQueueList.add(new AnimationTask(
+				AnimationType.JELLY_DESTROY, fila, col, fila, col, Assets.getIcon(newJelly)
+			));
+		
+		this.lastAnimation = AnimationType.DESTROY;
+		*/
+		
 	}
 
 	/**
@@ -331,16 +373,17 @@ public class BoardAnimation implements Tablero.Observer{
 			this.pintarGelatina(batch);
 		
 		//Pintar chucherias
-		for (int j=0; j<MD.filas(); j++) //Para cada fila
-			for (int i=0; i<MD.cols(); i++) {//para cada casilla de cada fila
+		for (int j=0; j<FILAS; j++) //Para cada fila
+			for (int i=0; i<COLS; i++) {//para cada casilla de cada fila
 				if (animCell[j][i].getIcon() != null )
 					batch.draw(animCell[j][i].getIcon(), animCell[j][i].getX(),
 							animCell[j][i].getY(), MD.dim(), MD.dim()
 						);
-				else
+				else if (animCell[j][i].getSprite() != null )
 					batch.draw(animCell[j][i].getSprite(), animCell[j][i].getX(),
 							animCell[j][i].getY(), MD.dim(), MD.dim()
 						);
+				else System.err.println("Sin sprite o icono: chuche("+ j+","+i+")");
 			}
 
 	}
@@ -352,16 +395,17 @@ public class BoardAnimation implements Tablero.Observer{
 	 */
 	protected void pintarGelatina(SpriteBatch batch) {		
 		//Pintar gelatina
-		for (int j=0; j<MD.filas(); j++) //Para cada fila
-			for (int i=0; i<MD.cols(); i++) {//para cada casilla de cada fila
+		for (int j=0; j<FILAS; j++) //Para cada fila
+			for (int i=0; i<COLS; i++) {//para cada casilla de cada fila
 				if (jellyAnimCell[j][i].getIcon() != null )
 					batch.draw(jellyAnimCell[j][i].getIcon(), jellyAnimCell[j][i].getX(),
 							jellyAnimCell[j][i].getY(), MD.dim(), MD.dim()
 						);
-				else
+				else if (animCell[j][i].getSprite() != null )
 					batch.draw(Assets.gelatinaFondo, jellyAnimCell[j][i].getX(),
 							jellyAnimCell[j][i].getY(), MD.dim(), MD.dim()
 						);
+				else System.err.println("Sin sprite o icono: gelatina("+ j+","+i+")");
 			}
 
 	}
@@ -372,15 +416,15 @@ public class BoardAnimation implements Tablero.Observer{
 	 */
 	protected void pintarGelatina2Jug(SpriteBatch batch) {
 		//Pintar fondo de gelatina
-		for (int j=0; j<MD.filas(); j++) { //Para cada fila
-			for (int i=0; i<MD.cols()/2; i++) {//para cada casilla de cada fila
+		for (int j=0; j<FILAS; j++) { //Para cada fila
+			for (int i=0; i<COLS/2; i++) {//para cada casilla de cada fila
 				batch.draw(Assets.gelatinaR2, 
 						MD.originX() + i*MD.dim(),
 						MD.originY() - (j+1)*MD.dim(),
 						MD.dim(), MD.dim()
 					);
 			}
-			for (int i=MD.cols()/2; i<MD.cols(); i++) {//para cada casilla de cada fila
+			for (int i=COLS/2; i<COLS; i++) {//para cada casilla de cada fila
 				batch.draw(Assets.gelatinaAz2, 
 						MD.originX() + i*MD.dim(),
 						MD.originY() - (j+1)*MD.dim(),
@@ -427,4 +471,7 @@ public class BoardAnimation implements Tablero.Observer{
 	 * @see GameType
 	 */
 	private GameType gameType;
+	
+	private int FILAS;
+	private int COLS;
 }

@@ -88,6 +88,8 @@ public class Assets {
 		gelatinaR2 = new Texture("iconos/candy images/gelatina/gelatinaRv2.png");
 		gelatinaAz1 = new Texture("iconos/candy images/gelatina/gelatinaAz1.png");
 		gelatinaR1 = new Texture("iconos/candy images/gelatina/gelatinaR1.png");
+		gelatinaB4 = new Texture("iconos/candy images/gelatina/gelatinaB4.png");
+		gelatinaB3 = new Texture("iconos/candy images/gelatina/gelatinaB3.png");
 		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB2.png");
 		gelatinaB1 = new Texture("iconos/candy images/gelatina/gelatinaB1v2.png");
 		gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
@@ -156,9 +158,21 @@ public class Assets {
 			case GELATINA_AZUL_2:	icon = gelatinaAz2;	break;
 			case GELATINA_NORMAL_1:	icon = gelatinaB1;	break;
 			case GELATINA_NORMAL_2:	icon = gelatinaB2;	break;
+			case GELATINA_NORMAL_3:	icon = gelatinaB3;	break;
+			case GELATINA_NORMAL_4:	icon = gelatinaB4;	break;
 			case GELATINA_ROJA_1:	icon = gelatinaR1;	break;
 			case GELATINA_ROJA_2:	icon = gelatinaR2;	break;
 			case SIN_GELATINA:		icon = gelatinaFondo;	break;
+			
+			//Coberturas
+			case COBERTURA_1:break;
+			case COBERTURA_2:break;
+			case COBERTURA_3:break;
+			case COBERTURA_4:break;
+			case COBERTURA_5:break;
+
+			case SIN_COBERTURA:break;
+
 			
 		}
 		return icon;
@@ -243,6 +257,8 @@ public class Assets {
 	public static Texture gelatinaAz1;
 	public static Texture gelatinaR2;
 	public static Texture gelatinaAz2;
+	public static Texture gelatinaB4;
+	public static Texture gelatinaB3;
 	public static Texture gelatinaB2;
 	public static Texture gelatinaB1;
 	public static Texture gelatinaFondo;

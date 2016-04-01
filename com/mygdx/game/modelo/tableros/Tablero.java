@@ -53,12 +53,17 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 		/** Se ha destruido el caramelo de la posición (fila, col) */
 		void onDestroyCandy(int fila, int col);
 		
-		/** Se ha destruido el caramelo de la posición (fila, col) 
+		/** Se ha destruido la gelatina de la posición (fila, col) 
 		 * @param newJelly nueva gelatina en la posición*/
 		void onDestroyJelly(int fila, int col, StuffList newJelly);
 		
-		/** Se ha transformado el caramelo de la posición (fila, col) en uno de otro tipo */
-		void onTransformCandy(StuffList candy, int fila, int col);
+		/** Se ha destruido la cobertura de la posición (fila, col) 
+		 * @param newCover nueva gelatina en la posición*/
+		void onDestroyCover(int fila, int col, StuffList newCover);
+		
+		/** Se ha transformado el caramelo de la posición (fila, col) en uno de otro tipo
+		 * @param newCandy nueva chuchería en la posición */
+		void onTransformCandy(int fila, int col, StuffList newCandy);
 	}
 	
 	/** Almacena una chuchería y sus coordenadas en el tablero para poder
@@ -158,9 +163,11 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * @param colSpawn Columna donde aparece (en caso de que caiga desde un lado).
 	 * En Caso contrario colSpawn = col
 	 * @param col Columna de la casilla
+	 * @param animateTransform Si es cierto, se llama al la funcion {@link Observer#onTransformCandy(int, int, StuffList)}.
+	 * En caso contrario, se llama a la función {@link Observer#onCreateCandy(StuffList, int, int, int, int)}
 	 * @return Devuelve si se ha podido hacer la creación
 	 */
-	public abstract boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col);
+	public abstract boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col, boolean animateTransform);
 	
 	/**
 	 * Introduce un caramelo en la casilla descrita. Puede ser de utilidad para los efectos de intercambio. <br><br>
@@ -172,7 +179,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * @param fila Fila de la casilla
 	 * @param fila
 	 * @param col
-	 * @param animateTransform Si es cierto, se llama al la funcion {@link Observer#onTransformCandy(StuffList, int, int)}
+	 * @param animateTransform Si es cierto, se llama al la funcion {@link Observer#onTransformCandy(int, int, StuffList)}
 	 */
 	public abstract void introducir(Chucheria candy, int fila, int col, boolean animateTransform);
 
@@ -196,8 +203,8 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * Dependiendo de lo que contenga la casilla, puede tener distintos efectos (o ninguno),
 	 * ya que puede implicar la destrucción de otros caramelos, gelatinas o coberturas. 
 	 * Llama a la función efectoIntercambio() de la chuchería <br> <br>
-	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
-	 * cambio, sí comprueba que el elemento a destruir no sea nulo <br>
+	 * <b>NOTA:</b> Sí comprueba que los parametros se encuentren dentro de los límites,
+	 *  y sí comprueba que el elemento a destruir no sea nulo <br>
 	 * <b>NOTA:</b> Dado que puede haber hasta dos combinaciones de intercambio, 
 	 * la implementacion debe asegurar que no se realiza el efecto onda expansiva a una casilla
 	 * que ya haya sufrido una destrucción u otra onda expansiva. Por ello, las funciones que
@@ -238,13 +245,13 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * Devuelve la chuchería en la posicion especificada. <br><br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites
 	 */
-	public abstract Chucheria getElementAt(int fila, int col) throws ArrayIndexOutOfBoundsException;
+	public abstract Chucheria getElementAt(int fila, int col);
 	
 	/**
 	 * Devuelve los IDs de todos los elementos en la posicion del tablero especificada. <br><br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites
 	 */
-	public abstract StuffPile getPileOfElementsAt(int fila, int col) throws ArrayIndexOutOfBoundsException;
+	public abstract StuffPile getPileOfElementsAt(int fila, int col);
 	
 	/**
 	 * Devuelve el tipo de juego que representa el tablero
@@ -476,7 +483,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 		boolean creado = false;
 		int col=colIni;
 		while (!creado && col<=colFin) {
-			creado = tablero.crear(candy, fila, fila, col, col);
+			creado = tablero.crear(candy, fila, fila, col, col, true);
 			col++;
 		}
 	}
@@ -494,7 +501,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 		boolean creado = false;
 		int fila=filaIni;
 		while (!creado && fila<=filaFin) {
-			creado = tablero.crear(candy, fila, fila, col, col);
+			creado = tablero.crear(candy, fila, fila, col, col, true);
 			fila++;
 		}
 	}
@@ -517,7 +524,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 				if (	segCol.getFilaIni() <= segFila.getFila() && segFila.getFila() <= segCol.getFilaFin()
 					 && segFila.getColIni() <= segCol.getCol() && segCol.getCol() <= segFila.getColFin() ) {
 					//Los segmentos se cortan -> Crear envuelto
-					boolean creado = this.crear(new Envuelto(segCol.getColor()), segFila.getFila(), segFila.getFila(), segCol.getCol(), segCol.getCol());
+					boolean creado = this.crear(new Envuelto(segCol.getColor()), segFila.getFila(), segFila.getFila(), segCol.getCol(), segCol.getCol(), true);
 					if (!creado) this.crearEnCol(this, new Envuelto(segCol.getColor()), segCol.getCol(), segCol.getFilaFin(), segCol.getFilaFin());
 				}
 			}

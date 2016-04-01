@@ -25,8 +25,6 @@ public class MD {
 		//Parameters
 		MD.width = width;
 		MD.height = height;
-		MD.filas = filas;
-		MD.cols = cols;
 		
 		//if(gameType == GameType.STEAL_2P)
 		//	cols = cols+2;
@@ -39,7 +37,7 @@ public class MD {
 		
 		//Origin
 		switch (gameType) {
-			case BASIC:	case JELLY_BASIC: case STEAL_2P:	
+			case BASIC:	case JELLY_BASIC: case STEAL_2P: case JELLY_2P: case JELLY_COVER_2P:
 				MD.originX = 0;
 				MD.originY = height;
 				break;
@@ -52,10 +50,6 @@ public class MD {
 	public static int width() 	{return width;}
 	/**@return alto de la pantalla*/
 	public static int height() 	{return height;}
-	/**@return número de filas del tablero*/
-	public static int filas() 	{return filas;}
-	/**@return número de columnas del tablero */
-	public static int cols() 	{return cols;}
 	/**@return ancho y alto de las casillas del tablero*/
 	public static int dim()		{return dim;}
 	/**@return coordenada X de la esquina superior izquierda del tablero
@@ -75,8 +69,6 @@ public class MD {
 	//Attributes
 	private static int width; 
 	private static int height;
-	private static int filas;
-	private static int cols;
 	private static int dim;
 	private static int originX;
 	private static int originY;

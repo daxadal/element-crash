@@ -225,15 +225,15 @@ public class Caramelo implements Chucheria {
 	 * @param contDch Margen libre a la derecha (entre 0 y 2)
 	 */
 	protected void crearEnFila(Tablero tablero, Chucheria candy, int fila, int col, int contIzq, int contDch) {	
-		boolean creado = tablero.crear(candy, fila, fila, col, col);
+		boolean creado = tablero.crear(candy, fila, fila, col, col, true);
 		if (!creado && contIzq >=1) {
-			creado = tablero.crear(candy, fila, fila, col-1, col-1);
+			creado = tablero.crear(candy, fila, fila, col-1, col-1, true);
 			if (!creado && contDch >=1) {
-				creado = tablero.crear(candy, fila, fila, col+1, col+1);
+				creado = tablero.crear(candy, fila, fila, col+1, col+1, true);
 				if (!creado && contIzq >=2) {
-					creado = tablero.crear(candy, fila, fila, col-2, col-2);
+					creado = tablero.crear(candy, fila, fila, col-2, col-2, true);
 					if (!creado && contDch >=2) {
-						creado = tablero.crear(candy, fila, fila, col+2, col+2);
+						creado = tablero.crear(candy, fila, fila, col+2, col+2, true);
 					}
 				}
 			}
@@ -252,15 +252,15 @@ public class Caramelo implements Chucheria {
 	 * @param contAb Margen libre hacia abajo (entre 0 y 2)
 	 */
 	protected void crearEnCol(Tablero tablero, Chucheria candy, int fila, int col, int contAr, int contAb) {
-		boolean creado = tablero.crear(candy, fila, fila, col, col);
+		boolean creado = tablero.crear(candy, fila, fila, col, col, true);
 		if (!creado && contAr >=1) {
-			creado = tablero.crear(candy, fila-1, fila-1, col, col);
+			creado = tablero.crear(candy, fila-1, fila-1, col, col, true);
 			if (!creado && contAb >=1) {
-				creado = tablero.crear(candy, fila+1, fila+1, col, col);
+				creado = tablero.crear(candy, fila+1, fila+1, col, col, true);
 				if (!creado && contAr >=2) {
-					creado = tablero.crear(candy, fila-2, fila-2, col, col);
+					creado = tablero.crear(candy, fila-2, fila-2, col, col, true);
 					if (!creado && contAb >=2) {
-						creado = tablero.crear(candy, fila+2, fila+2, col, col);
+						creado = tablero.crear(candy, fila+2, fila+2, col, col, true);
 					}
 				}
 			}

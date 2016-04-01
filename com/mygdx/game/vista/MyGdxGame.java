@@ -7,28 +7,31 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.mygdx.game.controlador.Controlador;
-import com.mygdx.game.modelo.tableros.*;
+import com.mygdx.game.modelo.tableros.Tablero;
+import com.mygdx.game.modelo.tableros.TableroJelly2Jug;
+import com.mygdx.game.modelo.tableros.TableroJellyBasic;
 
 public class MyGdxGame implements ApplicationListener {
 	
 	
 	@Override
 	public void create () {
-		//Creacion
+		Assets.loadCandies();
+		
 		batch = new SpriteBatch();
-		this.tablero = new TableroJellyBasic();
+		this.tablero = new TableroJelly2Jug();
 
 		this.filaSelec = -1;
 		this.colSelec = -1;
 		this.controlador = new Controlador(tablero, this);
-		
-		//Inicialización
-		Assets.loadCandies();		
+					
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		MD.rearrange(width, height, tablero.getRows(), tablero.getColumns(), tablero.getGameType());
+		if (this.boardAnim != null)
+			this.tablero.removeObserver(this.boardAnim);
 		this.boardAnim = new BoardAnimation(this.controlador);
 		this.tablero.addObserver(this.boardAnim);
 		createTouchPoints();
@@ -41,9 +44,9 @@ public class MyGdxGame implements ApplicationListener {
 	/** Crea las zonas clicables de la pantalla */
 	private void createTouchPoints() {
 			
-		this.cuadrTablero = new BoundingBox[MD.filas()][MD.cols()];
-		for (int j=0; j<MD.filas(); j++) //Para cada fila
-			for (int i=0; i<MD.cols(); i++) //para cada casilla de cada fila
+		this.cuadrTablero = new BoundingBox[controlador.getRows()][controlador.getColumns()];
+		for (int j=0; j<controlador.getRows(); j++) //Para cada fila
+			for (int i=0; i<controlador.getColumns(); i++) //para cada casilla de cada fila
 				this.cuadrTablero[j][i] = new BoundingBox(
 						new Vector3(MD.originX_BB()+i*MD.dim(),
 									MD.originY_BB()+j*MD.dim(), 0),
@@ -74,8 +77,8 @@ public class MyGdxGame implements ApplicationListener {
 	/**Analiza los toques en la pantalla y realiza las acciones adecuadas*/
 	private void analizeEntry() {
 		Vector3 pointer = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-		for (int j=0; j<MD.filas(); j++) //Para cada fila
-			for (int i=0; i<MD.cols(); i++) //para cada casilla de cada fila
+		for (int j=0; j<controlador.getRows(); j++) //Para cada fila
+			for (int i=0; i<controlador.getColumns(); i++) //para cada casilla de cada fila
 				if (this.cuadrTablero[j][i].contains(pointer)) {
 					if (this.filaSelec < 0 || this.colSelec < 0) {//No se ha pulsado otro boton
 						this.filaSelec = j;

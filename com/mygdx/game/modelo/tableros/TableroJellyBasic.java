@@ -15,7 +15,6 @@ import com.mygdx.game.modelo.caramelos.Chucheria;
 public class TableroJellyBasic extends Tablero {
 
 	
-	
 	/** Almacena una chuchería y sus coordenadas en el tablero para poder
 	 * destruirla más tarde */
 	protected class ChucheYcoordBasic implements ChucheYcoord {
@@ -31,7 +30,7 @@ public class TableroJellyBasic extends Tablero {
 			try {
 				while (candy != tablero.getElementAt(fila, col))
 					fila++;
-				candy.destruir(tablero, fila, col);
+				tablero.destruir(fila, col);
 			}
 			catch (ArrayIndexOutOfBoundsException ex) {}		
 		}
@@ -80,11 +79,18 @@ public class TableroJellyBasic extends Tablero {
 	}
 
 	@Override
-	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col) {
+	public boolean crear(Chucheria candy, int filaSpawn, int fila, int colSpawn, int col, boolean animateTransform) {
 		boolean creado = false;
 		if (tableroChuches[fila][col] == null) {
 			tableroChuches[fila][col] = candy;
-			for (Observer o: obs) o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
+			if (animateTransform) {
+				for (Observer o: obs) 
+					o.onTransformCandy(fila, col, candy.getID()); //Avisamos de la transformación
+			}
+			else {
+				for (Observer o: obs)
+					o.onCreateCandy(candy.getID(), filaSpawn, fila, colSpawn, col); //Avisamos de la creación
+			}
 			creado = true;
 		}
 		return creado;
@@ -94,7 +100,7 @@ public class TableroJellyBasic extends Tablero {
 	@Override
 	public void introducir(Chucheria candy, int fila, int col, boolean animateTransform) {
 		tableroChuches[fila][col] = candy;
-		if (animateTransform) for (Observer o: obs) o.onTransformCandy(candy.getID(), fila, col);
+		if (animateTransform) for (Observer o: obs) o.onTransformCandy(fila, col, candy.getID());
 	}
 
 
@@ -126,7 +132,7 @@ public class TableroJellyBasic extends Tablero {
 	}
 
 	@Override
-	public Chucheria getElementAt(int i, int j) throws ArrayIndexOutOfBoundsException {
+	public Chucheria getElementAt(int i, int j) {
 		return tableroChuches[i][j];
 	}
 	
@@ -144,12 +150,12 @@ public class TableroJellyBasic extends Tablero {
 	}
 	
 	@Override
-	public StuffPile getPileOfElementsAt(int fila, int col)
-			throws ArrayIndexOutOfBoundsException {
+	public StuffPile getPileOfElementsAt(int fila, int col) {
 		
 		return new StuffPile(
 				tableroChuches[fila][col].getID(), 
-				intToWhiteJelly(tableroGelatinas[fila][col])
+				intToWhiteJelly(tableroGelatinas[fila][col]),
+				StuffList.SIN_COBERTURA
 				);
 	}
 
@@ -194,7 +200,7 @@ public class TableroJellyBasic extends Tablero {
 			}
 			
 			while (iRec>=0) { //Rellenamos sobrantes
-				crear(new Caramelo(), iExtr, iRec, j, j);
+				crear(new Caramelo(), iExtr, iRec, j, j, false);
 				iRec--;
 				iExtr--;
 			}

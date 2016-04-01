@@ -10,9 +10,10 @@ public class StuffPile {
 	 * @param candy ID de la chuchería
 	 * @param jelly ID de la gelatina
 	 */
-	public StuffPile(StuffList candy, StuffList jelly) {
+	public StuffPile(StuffList candy, StuffList jelly, StuffList cover) {
 		this.candy = candy;
 		this.jelly = jelly;
+		this.cover = cover;
 	}
 	
 	/**
@@ -31,6 +32,15 @@ public class StuffPile {
 		return jelly;
 	}
 	
+	/**
+	 * Extrae el ID de la cobertura del conjunto
+	 * @return ID de la cobertura
+	 */
+	public StuffList getCover() {
+		return cover;
+	}
+	
 	private StuffList candy;
 	private StuffList jelly;
+	private StuffList cover;
 }

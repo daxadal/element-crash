@@ -32,6 +32,11 @@ public class Ingrediente implements Chucheria{
 	}
 
 	@Override
+	public boolean efectoOndaExpansiva(Tablero tablero, int fila, int col) {
+		return false;
+	}
+
+	@Override
 	public boolean combinarDeIntercambio(Tablero tablero, int fila, int col) {
 		return false;
 	}

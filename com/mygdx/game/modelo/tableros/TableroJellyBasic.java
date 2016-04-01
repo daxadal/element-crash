@@ -45,7 +45,7 @@ public class TableroJellyBasic extends Tablero {
 	 * Crea un tablero básico con caramelos aleatorios, asegurando
 	 * que no aparecen 3 de un mismo color ni en fila ni en columna
 	 */
-	public TableroJellyBasic() {
+	public TableroJellyBasic(int nivelGelatina) {
 		this.destruirMasTarde = new Vector<ChucheYcoord>();
 		this.FILAS = 8;
 		this.COLS = 8;
@@ -62,7 +62,7 @@ public class TableroJellyBasic extends Tablero {
 		this.tableroGelatinas = new int[FILAS][COLS];
 		for (int i=0; i<FILAS; i++) {
 			for (int j=0; j<COLS; j++) {
-					tableroGelatinas[i][j] = 2;
+					tableroGelatinas[i][j] = nivelGelatina;
 			}
 		}
 	}
@@ -235,13 +235,13 @@ public class TableroJellyBasic extends Tablero {
 	}
 
 	/**Matriz de chucherías que representa el tablero, representado como (fila,columna)*/
-	private Chucheria[][] tableroChuches;
+	protected Chucheria[][] tableroChuches;
 	
 	/**Matriz de gelatinas del tablero, representado como (fila,columna)*/
-	private int[][] tableroGelatinas;
+	protected int[][] tableroGelatinas;
 	
 	/** Las chucherías con varias fases de destrucciónse registran aquí
 	 *  para volver a destruirse cuando el tablero esté estable*/
-	private Vector<ChucheYcoord> destruirMasTarde;
+	protected Vector<ChucheYcoord> destruirMasTarde;
 	
 }

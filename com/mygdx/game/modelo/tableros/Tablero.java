@@ -197,7 +197,12 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * ya que puede implicar la destrucción de otros caramelos, gelatinas o coberturas. 
 	 * Llama a la función efectoIntercambio() de la chuchería <br> <br>
 	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
-	 * cambio, sí comprueba que el elemento a destruir no sea nulo
+	 * cambio, sí comprueba que el elemento a destruir no sea nulo <br>
+	 * <b>NOTA:</b> Dado que puede haber hasta dos combinaciones de intercambio, 
+	 * la implementacion debe asegurar que no se realiza el efecto onda expansiva a una casilla
+	 * que ya haya sufrido una destrucción u otra onda expansiva. Por ello, las funciones que
+	 * usen esta llamada pueden llamar varias veces a esta funcion sobre una misma casilla
+	 * sin que se produzca el efecto varias veces.
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
 	 */

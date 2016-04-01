@@ -34,7 +34,12 @@ public class Caramelo implements Chucheria {
 	}
 
 	@Override
-	public boolean combinarDeIntercambio(Tablero tablero, int fila, int col) {
+	public boolean efectoOndaExpansiva(Tablero tablero, int fila, int col) {
+		return false;
+	}
+
+	@Override
+	public boolean combinarDeIntercambio(Tablero tablero, int fila, int col) { 
 		boolean hayCambios = false;
 		
 		if (color != Color.NINGUNO) {
@@ -63,6 +68,69 @@ public class Caramelo implements Chucheria {
 				tablero.destruir(fila, col);
 				hayCambios = true;
 			}
+			
+			//Llamar efecto onda expansiva del tablero,
+			if (contAr > 1 || contIzq > 1)
+				tablero.efectoOndaExpansiva(fila-1, col-1);
+			if (contAr > 1 || contDch > 1)
+				tablero.efectoOndaExpansiva(fila-1, col+1);
+			if (contAb > 1 || contIzq > 1)
+				tablero.efectoOndaExpansiva(fila+1, col-1);
+			if (contAb > 1 || contDch > 1)
+				tablero.efectoOndaExpansiva(fila+1, col+1);
+			
+			if (contAr == 1) {
+				tablero.efectoOndaExpansiva(fila-2, col-1);
+				tablero.efectoOndaExpansiva(fila-2, col);
+				tablero.efectoOndaExpansiva(fila-2, col+1);
+			}
+			else if (contAr == 2) {
+				tablero.efectoOndaExpansiva(fila-2, col-1);
+				tablero.efectoOndaExpansiva(fila-2, col+1);
+				tablero.efectoOndaExpansiva(fila-3, col-1);
+				tablero.efectoOndaExpansiva(fila-3, col);
+				tablero.efectoOndaExpansiva(fila-3, col+1);
+			}
+			
+			if (contAb == 1) {
+				tablero.efectoOndaExpansiva(fila+2, col-1);
+				tablero.efectoOndaExpansiva(fila+2, col);
+				tablero.efectoOndaExpansiva(fila+2, col+1);
+			}
+			else if (contAb == 2) {
+				tablero.efectoOndaExpansiva(fila+2, col-1);
+				tablero.efectoOndaExpansiva(fila+2, col+1);
+				tablero.efectoOndaExpansiva(fila+3, col-1);
+				tablero.efectoOndaExpansiva(fila+3, col);
+				tablero.efectoOndaExpansiva(fila+3, col+1);
+			}
+			
+			if (contIzq == 1) {
+				tablero.efectoOndaExpansiva(fila-1, col-2);
+				tablero.efectoOndaExpansiva(fila, col-2);
+				tablero.efectoOndaExpansiva(fila+1, col-2);
+			}
+			else if (contIzq == 2) {
+				tablero.efectoOndaExpansiva(fila-1, col-2);
+				tablero.efectoOndaExpansiva(fila+1, col-2);
+				tablero.efectoOndaExpansiva(fila-1, col-3);
+				tablero.efectoOndaExpansiva(fila, col-3);
+				tablero.efectoOndaExpansiva(fila+1, col-3);
+			}
+			
+			if (contDch == 1) {
+				tablero.efectoOndaExpansiva(fila-1, col+2);
+				tablero.efectoOndaExpansiva(fila, col+2);
+				tablero.efectoOndaExpansiva(fila+1, col+2);
+			}
+			else if (contDch == 2) {
+				tablero.efectoOndaExpansiva(fila-1, col+2);
+				tablero.efectoOndaExpansiva(fila+1, col+2);
+				tablero.efectoOndaExpansiva(fila-1, col+3);
+				tablero.efectoOndaExpansiva(fila, col+3);
+				tablero.efectoOndaExpansiva(fila+1, col+3);
+			}
+			
 			
 			//Creación de caramelos especiales
 			

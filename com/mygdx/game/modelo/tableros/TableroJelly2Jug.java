@@ -7,11 +7,6 @@ import com.mygdx.game.controlador.StuffList;
 import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
-import com.mygdx.game.modelo.caramelos.Color;
-import com.mygdx.game.modelo.caramelos.Ingrediente;
-import com.mygdx.game.modelo.tableros.Tablero.Observer;
-import com.mygdx.game.modelo.tableros.Tablero.SegmentoCol;
-import com.mygdx.game.modelo.tableros.Tablero.SegmentoFila;
 
 /**
  * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece inicialmente al jugador rojo,
@@ -61,9 +56,15 @@ public class TableroJelly2Jug extends Tablero {
 		this.destruirMasTarde = new Vector<ChucheYcoord>();
 		this.FILAS = 8;
 		this.COLS= 12;
+		this.GELATINA_MAS_ROJA = 1;
+		this.GELATINA_MENOS_ROJA = 2;
+		this.GELATINA_MENOS_AZUL = 3;
+		this.GELATINA_MAS_AZUL = 4;
 		this.gelAzulesEnTablero = FILAS*COLS/2;
 		this.gelRojasEnTablero = FILAS*COLS/2;
 		this.isRedPlayersTurn = true;
+		
+		
 		
 		this.tableroChuches = new Chucheria[FILAS][COLS];
 		for (int i=0; i<FILAS; i++) {
@@ -77,12 +78,21 @@ public class TableroJelly2Jug extends Tablero {
 		this.tableroGelatinas = new int[FILAS][COLS];
 		for (int j=0; j<COLS/2; j++) {
 			for (int i=0; i<FILAS; i++) {
-					tableroGelatinas[i][j] = 1;
+					tableroGelatinas[i][j] = GELATINA_MAS_ROJA;
 			}
 		}
 		for (int j=COLS/2; j<COLS; j++) {
 			for (int i=0; i<FILAS; i++) {
-					tableroGelatinas[i][j] = 4;
+					tableroGelatinas[i][j] = GELATINA_MAS_AZUL;
+			}
+		}
+		
+		//XXX EXP
+		this.turno = 1;
+		this.tableroTurnos = new int[FILAS][COLS];
+		for (int i=0; i<FILAS; i++) {
+			for (int j=0; j<COLS; j++) {
+				tableroTurnos[i][j] = 0;
 			}
 		}
 	}
@@ -102,13 +112,14 @@ public class TableroJelly2Jug extends Tablero {
 			}
 		}
 		
-		if (intercambioExitoso)
+		if (intercambioExitoso) {
 			this.isRedPlayersTurn = !this.isRedPlayersTurn; //Cambio de turno
+			turno++;
+		}
 		
 		//XXX TEST Implentar puntos de manera grafica
-		System.out.println("Score: R " + this.puntosRojo + ", A " + this.puntosAzul
-				+ " OnBoard: R " + this.ingRojosEnTablero + " (" + this.restantesParaIngRojo + " left),"
-				+ "A " + this.ingAzulesEnTablero + " (" + this.restantesParaIngAzul + " left),");
+		System.out.println("JellyOnBoard: R " + this.gelRojasEnTablero + ","
+				+ "A " + this.gelAzulesEnTablero);
 		if (isRedPlayersTurn)
 			System.out.println("Red's turn!");
 		else
@@ -137,27 +148,40 @@ public class TableroJelly2Jug extends Tablero {
 	}
 	
 	@Override
+	public void efectoOndaExpansiva(int fila, int col) {
+		this.tableroChuches[fila][col].efectoOndaExpansiva(this, fila, col);
+		this.destruirGelatina(fila,col);
+	}
+	
+	protected void destruirGelatina(int fila, int col) {
+		//XXX EXP
+		if (this.tableroTurnos[fila][col] < turno) {
+			this.tableroTurnos[fila][col] = turno;
+			
+			if (this.isRedPlayersTurn && this.tableroGelatinas[fila][col] > this.GELATINA_MAS_ROJA) {
+				this.tableroGelatinas[fila][col]--;
+				if (this.tableroGelatinas[fila][col] == this.GELATINA_MENOS_ROJA) {
+					this.gelRojasEnTablero++;
+					this.gelAzulesEnTablero--;
+				}
+			}
+			else if (this.tableroGelatinas[fila][col] < this.GELATINA_MAS_AZUL) {
+				this.tableroGelatinas[fila][col]++;
+				if (this.tableroGelatinas[fila][col] == this.GELATINA_MENOS_AZUL) {
+					this.gelRojasEnTablero--;
+					this.gelAzulesEnTablero++;
+				}
+			}
+		}
+	}
+
+	@Override
 	public void destruir(int fila, int col) { //TODO destruir
 		if (tableroChuches[fila][col] != null) {
+			this.destruirGelatina(fila, col);
 			boolean debeDestruirse = tableroChuches[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
-			
-				if (tableroChuches[fila][col].getID() == StuffList.CEREZA_AZUL) {
-					this.puntosAzul++;
-					this.gelAzulesEnTablero--;
-					//this.ingEnTablero.remove(tablero[fila][col]);
-					if (this.gelAzulesEnTablero == 0 && this.restantesParaIngAzul > RESTANTES_PRIMERO)
-						this.restantesParaIngAzul = RESTANTES_PRIMERO;
-				}
-				else if (tableroChuches[fila][col].getID() == StuffList.CEREZA_ROJA) {
-					this.puntosRojo++;
-					this.gelRojasEnTablero--;
-					//this.ingEnTablero.remove(tablero[fila][col]);
-					if (this.gelRojasEnTablero == 0 && this.restantesParaIngRojo > RESTANTES_PRIMERO)
-						this.restantesParaIngRojo = RESTANTES_PRIMERO;
-				}
-				this.suprimir(fila, col, false);
-				for (Observer o: obs) o.onDestroyCandy(fila, col);
+				this.suprimir(fila, col, true);
 			}
 			else
 				this.addToDestruirMasTarde(fila, col);
@@ -324,7 +348,21 @@ public class TableroJelly2Jug extends Tablero {
 	private Chucheria[][] tableroChuches;
 	/**Matriz de gelatinas del tablero, representado como (fila,columna)*/
 	private int[][] tableroGelatinas;
-	
+	/**XXX EXP Matriz de enteros que indique en qué turno se ha destruido
+	 * gelatina por ultima vez en esa casilla*/
+	private int[][] tableroTurnos;
+	/**XXX EXP numero de turno*/
+	private int turno;
+	/**Mínimo valor que puede tomar la gelatina*/
+	private final int GELATINA_MAS_ROJA;
+	/**Máximo valor que puede tomar la gelatina*/
+	private final int GELATINA_MAS_AZUL;
+	/**Máximo valor que puede tomar la gelatina <b>ROJA</b> (valor medio entre
+	 * la más roja y la más azul)*/
+	private final int GELATINA_MENOS_ROJA;
+	/**Mínimo valor que puede tomar la gelatina <b>AZUL</b>  (valor medio entre
+	 * la más roja y la más azul)*/
+	private final int GELATINA_MENOS_AZUL;
 	/** Las chucherías con varias fases de destrucciónse registran aquí
 	 *  para volver a destruirse cuando el tablero esté estable*/
 	private Vector<ChucheYcoord> destruirMasTarde;

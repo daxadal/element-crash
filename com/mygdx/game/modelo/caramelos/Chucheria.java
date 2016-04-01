@@ -41,6 +41,20 @@ public interface Chucheria {
 	public boolean efectoIntercambio(Tablero tablero, int filaSelf, int colSelf, 
 			int filaOther, int colOther, boolean iMovedThis);
 	
+	/**
+	 * Indica que en la casilla de al lado a la que se encuentra
+	 * esta chuchería se ha destruido otra chuchería.
+	 * Dependiendo de lo que contenga la casilla, puede tener distintos efectos (o ninguno),
+	 * ya que puede implicar la destrucción de esta chuchería. <br><br>
+	 * <b>NOTA:</b> No comprueba que los parametros se encuentren dentro de los límites. En
+	 * cambio, sí comprueba que el elemento a destruir no sea nulo
+	 * @param tablero Tablero en cuestión
+	 * @param fila Fila de la chuchería
+	 * @param col Columna de la chuchería
+	 * @return True si el intercambio produce algún efecto. False en caso contrario.
+	 */
+	public abstract boolean efectoOndaExpansiva(Tablero tablero, int fila, int col);
+	
 	/** Método que comprueba si una chuchería (no necesariamente caramelo) en su posoción produce una
 	 * combinación. Recibe el tablero y las cordenadas de la chuchería y devuelve un booleano diciendo 
 	 * si se produce combinación, destruyendo cuches o creando chuches especiales. <br>

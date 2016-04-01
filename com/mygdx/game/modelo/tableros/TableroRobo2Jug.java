@@ -149,7 +149,6 @@ public class TableroRobo2Jug extends Tablero {
 						this.restantesParaIngRojo = RESTANTES_PRIMERO;
 				}
 				this.suprimir(fila, col, false);
-				for (Observer o: obs) o.onDestroyCandy(fila, col);
 			}
 			else
 				this.addToDestruirMasTarde(fila, col);

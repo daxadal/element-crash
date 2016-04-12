@@ -269,7 +269,7 @@ public class BoardAnimation implements Tablero.Observer{
 		this.lastAnimation = AnimationType.FALL;
 		
 		//XXX TEST
-		System.out.println("Create: (" + filaSpawn + "," + colSpawn + ") <-> (" + fila + "," + col +")");
+		System.out.println("Create: (" + filaSpawn + "," + colSpawn + ") -> (" + fila + "," + col +")");
 	}
 
 	@Override
@@ -369,7 +369,7 @@ public class BoardAnimation implements Tablero.Observer{
 	public void drawTablero(SpriteBatch batch) {
 		if (gameType == GameType.STEAL_2P)
 			this.pintarGelatina2Jug(batch);
-		else if (gameType == GameType.JELLY_BASIC)
+		else if (gameType == GameType.JELLY_BASIC || gameType == GameType.JELLY_2P)
 			this.pintarGelatina(batch);
 		
 		//Pintar chucherias

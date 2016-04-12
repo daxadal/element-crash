@@ -87,7 +87,7 @@ public class TableroRobo2Jug extends Tablero {
 			if (isRedPlayersTurn && col1 < COLS/2 && col2 < COLS/2) {
 				intercambioExitoso = super.intercambioGenerico(fila1, col1, fila2, col2);
 			}
-			else if (col1 >= COLS/2 && col2 >= COLS/2) {
+			else if (!isRedPlayersTurn && col1 >= COLS/2 && col2 >= COLS/2) {
 				intercambioExitoso = super.intercambioGenerico(fila1, col1, fila2, col2);
 			}
 		}

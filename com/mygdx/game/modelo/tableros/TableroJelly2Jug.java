@@ -7,6 +7,7 @@ import com.mygdx.game.controlador.StuffList;
 import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
+import com.mygdx.game.modelo.tableros.Tablero.Observer;
 
 /**
  * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece inicialmente al jugador rojo,
@@ -104,10 +105,12 @@ public class TableroJelly2Jug extends Tablero {
 				|| (fila1 == fila2 && Math.abs(col1-col2) == 1 )
 				|| (col1 == col2 && Math.abs(fila1-fila2) == 1 )	) {
 			
-			if (isRedPlayersTurn && col1 < COLS/2 && col2 < COLS/2) {
+			if (isRedPlayersTurn && tableroGelatinas[fila1][col1] <= GELATINA_MENOS_ROJA
+					&& tableroGelatinas[fila2][col2] <= GELATINA_MENOS_ROJA) {
 				intercambioExitoso = super.intercambioGenerico(fila1, col1, fila2, col2);
 			}
-			else if (col1 >= COLS/2 && col2 >= COLS/2) {
+			else if (!isRedPlayersTurn && tableroGelatinas[fila1][col1] >= GELATINA_MENOS_AZUL
+					&& tableroGelatinas[fila2][col2] >= GELATINA_MENOS_AZUL) {
 				intercambioExitoso = super.intercambioGenerico(fila1, col1, fila2, col2);
 			}
 		}
@@ -157,14 +160,25 @@ public class TableroJelly2Jug extends Tablero {
 	@Override
 	public void efectoOndaExpansiva(int fila, int col) {
 		if (fila>=0 && col>=0 && fila<FILAS && col<COLS) {
-			this.tableroChuches[fila][col].efectoOndaExpansiva(this, fila, col);
-			this.destruirGelatina(fila,col);
+			if (this.tableroChuches[fila][col] != null)
+				this.tableroChuches[fila][col].efectoOndaExpansiva(this, fila, col);
+			this.destruirGelatina(fila,col, false);
 		}
 	}
-	
-	protected void destruirGelatina(int fila, int col) {
+	/**
+	 * Destruye la gelatina en la casilla (fila,col)
+	 * @param fila fila de la casilla
+	 * @param col columna de la casilla
+	 * @param repetir Si es cierto, la destrucción es efectiva en cualquier caso.
+	 * Si es falso, entonces sólo se destruye cuando no haya habido ninguna otra
+	 * destrucción en ese mismo turno. Será falso para el efectoOndaExpansiva() 
+	 * y cierto para la funcion suprimir()
+	 * @see TableroJelly2Jug#suprimir(int, int, boolean)
+	 * @see TableroJelly2Jug#efectoOndaExpansiva(int, int)
+	 */
+	protected void destruirGelatina(int fila, int col, boolean repetir) {
 		//XXX EXP
-		if (this.tableroTurnos[fila][col] < turno) {
+		if (repetir || this.tableroTurnos[fila][col] < turno) {
 			this.tableroTurnos[fila][col] = turno;
 			
 			if (this.isRedPlayersTurn && this.tableroGelatinas[fila][col] > this.GELATINA_MAS_ROJA) {
@@ -174,20 +188,21 @@ public class TableroJelly2Jug extends Tablero {
 					this.gelAzulesEnTablero--;
 				}
 			}
-			else if (this.tableroGelatinas[fila][col] < this.GELATINA_MAS_AZUL) {
+			else if (!this.isRedPlayersTurn && this.tableroGelatinas[fila][col] < this.GELATINA_MAS_AZUL) {
 				this.tableroGelatinas[fila][col]++;
 				if (this.tableroGelatinas[fila][col] == this.GELATINA_MENOS_AZUL) {
 					this.gelRojasEnTablero--;
 					this.gelAzulesEnTablero++;
 				}
 			}
+			
+			for (Observer o: obs) o.onDestroyJelly(fila, col, intToColorJelly(tableroGelatinas[fila][col]));
 		}
 	}
 
 	@Override
 	public void destruir(int fila, int col) { //TODO destruir
 		if (tableroChuches[fila][col] != null) {
-			this.destruirGelatina(fila, col);
 			boolean debeDestruirse = tableroChuches[fila][col].destruir(this, fila, col);
 			if (debeDestruirse) {
 				this.suprimir(fila, col, true);
@@ -200,7 +215,10 @@ public class TableroJelly2Jug extends Tablero {
 	@Override
 	public void suprimir(int fila, int col, boolean animateDestroy) { //TODO suprimir
 		tableroChuches[fila][col] = null;
-		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
+		if (animateDestroy) {
+			for (Observer o: obs) o.onDestroyCandy(fila, col);
+			this.destruirGelatina(fila, col, true);
+		}
 	}
 
 	@Override

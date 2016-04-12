@@ -202,7 +202,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * Indica que al lado de la casilla se ha destruido una chuchería.
 	 * Dependiendo de lo que contenga la casilla, puede tener distintos efectos (o ninguno),
 	 * ya que puede implicar la destrucción de otros caramelos, gelatinas o coberturas. 
-	 * Llama a la función efectoIntercambio() de la chuchería <br> <br>
+	 * Llama a la función efectoOndaExpansiva() de la chuchería <br> <br>
 	 * <b>NOTA:</b> Sí comprueba que los parametros se encuentren dentro de los límites,
 	 *  y sí comprueba que el elemento a destruir no sea nulo <br>
 	 * <b>NOTA:</b> Dado que puede haber hasta dos combinaciones de intercambio, 
@@ -212,6 +212,7 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	 * sin que se produzca el efecto varias veces.
 	 * @param fila Fila de la casilla
 	 * @param col Columna de la casilla
+	 * @see Chucheria#efectoOndaExpansiva(Tablero, int, int)
 	 */
 	public abstract void efectoOndaExpansiva(int fila, int col);
 

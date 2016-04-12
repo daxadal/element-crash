@@ -94,6 +94,13 @@ public class Assets {
 		gelatinaB1 = new Texture("iconos/candy images/gelatina/gelatinaB1v2.png");
 		gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
 		
+		//coberturas
+		cobertura5 = new Texture("iconos/candy images/cobertura/cobertura5.png");
+		cobertura4 = new Texture("iconos/candy images/cobertura/cobertura4.png");
+		cobertura3 = new Texture("iconos/candy images/cobertura/cobertura3.png");
+		cobertura2 = new Texture("iconos/candy images/cobertura/cobertura2.png");
+		cobertura1 = new Texture("iconos/candy images/cobertura/cobertura1.png");
+		
 		//Decoraciones y animaciones
 		back = new Texture("iconos/candy images/fondo.png");
 		destroy = loadAnimation("iconos/gifs/destroy_ice_002_small.png", 2, 5, 0.5f);
@@ -165,15 +172,14 @@ public class Assets {
 			case SIN_GELATINA:		icon = gelatinaFondo;	break;
 			
 			//Coberturas
-			case COBERTURA_1:break;
-			case COBERTURA_2:break;
-			case COBERTURA_3:break;
-			case COBERTURA_4:break;
-			case COBERTURA_5:break;
-
+			case COBERTURA_1:	icon = cobertura1;	break;
+			case COBERTURA_2:	icon = cobertura2;	break;
+			case COBERTURA_3:	icon = cobertura3;	break;
+			case COBERTURA_4:	icon = cobertura4;	break;
+			case COBERTURA_5:	icon = cobertura5;	break;
 			case SIN_COBERTURA:break;
+			case SIN_CARAMELO:break;
 
-			
 		}
 		return icon;
 	}
@@ -262,6 +268,13 @@ public class Assets {
 	public static Texture gelatinaB2;
 	public static Texture gelatinaB1;
 	public static Texture gelatinaFondo;
+	
+	//Coberturas
+	public static Texture cobertura5;
+	public static Texture cobertura4;
+	public static Texture cobertura3;
+	public static Texture cobertura2;
+	public static Texture cobertura1;
 
 	public static Texture back;
 	

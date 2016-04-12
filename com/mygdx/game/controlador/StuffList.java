@@ -43,6 +43,7 @@ public enum StuffList {
 	CARAMELO_EXPLOTANDO_MORADO,
 	
 	//Chuches sin color
+	SIN_CARAMELO,
 	BOMBA_COLOR,
 	CEREZA,
 	CEREZA_AZUL,

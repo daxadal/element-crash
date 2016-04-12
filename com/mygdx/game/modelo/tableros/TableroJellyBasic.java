@@ -117,12 +117,16 @@ public class TableroJellyBasic extends Tablero {
 			else
 				this.addToDestruirMasTarde(fila, col);	
 		}
+		else if(tableroGelatinas[fila][col]>0) {
+			tableroGelatinas[fila][col]--;
+			for (Observer o: obs) o.onDestroyJelly(fila, col, intToWhiteJelly(tableroGelatinas[fila][col]));
+		}
 	}
 	
 	@Override
-	public void suprimir(int fila, int col, boolean animateDestroy) {
+	public void suprimir(int fila, int col, boolean realDestroy) {
 		tableroChuches[fila][col] = null;
-		if (animateDestroy) {
+		if (realDestroy) {
 			for (Observer o: obs) o.onDestroyCandy(fila, col);
 			if(tableroGelatinas[fila][col]>0) {
 				tableroGelatinas[fila][col]--;
@@ -207,22 +211,6 @@ public class TableroJellyBasic extends Tablero {
 			
 			
 		}	
-	}
-
-
-	@Override
-	protected boolean combinarDeBarrido() {
-		Vector<SegmentoFila> combinFila = sacarCombinFilas();
-		Vector<SegmentoCol> combinCol = sacarCombinCols();
-		
-		if (combinFila.isEmpty() && combinCol.isEmpty())
-			return false;
-		else {
-			destruir(combinFila, combinCol);
-			crearEspecialesBarrido(combinFila, combinCol);
-			return true;
-		}
-		
 	}
 
 

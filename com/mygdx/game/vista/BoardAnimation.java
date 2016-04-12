@@ -128,11 +128,18 @@ public class BoardAnimation implements Tablero.Observer{
 			case JELLY_DESTROY:
 				jellyAnimCell[filaFin][colFin].newJellyDestroy(icon);
 				break;
-			
+			case COVER_DESTROY:
+				coverAnimCell[filaFin][colFin].newCoverDestroy(icon);
+				break;			
 			}
 		}
 	}
-	
+	/**
+	 * Crea el control de la animación. Es necesario que la clase MD haya sido inicializada con 
+	 * un resize(), ya que los AnimationCell usan valores de MD en su constructor.
+	 * @param controlTablero
+	 * @see AnimationCell
+	 */
 	public BoardAnimation(Controlador controlTablero) {
 		interactionQueue = new ConcurrentLinkedQueue<LinkedList<AnimationTask>>();
 		actualList = new LinkedList<AnimationCell>();
@@ -144,11 +151,14 @@ public class BoardAnimation implements Tablero.Observer{
 		COLS = controlTablero.getColumns();
 		
 		animCell = new AnimationCell[FILAS][COLS];
+		
 		if (gameType == GameType.JELLY_BASIC
 				|| gameType == GameType.JELLY_2P
-				|| gameType == GameType.JELLY_COVER_2P)
+				|| gameType == GameType.JELLY_COVER_BASIC)
 			jellyAnimCell = new AnimationCell[FILAS][COLS];
 		
+		if (gameType == GameType.JELLY_COVER_BASIC)
+			coverAnimCell = new AnimationCell[FILAS][COLS];
 		
 		StuffPile pileOfThings;
 		Texture icon;
@@ -161,9 +171,13 @@ public class BoardAnimation implements Tablero.Observer{
 				animCell[j][i] = new AnimationCell(j, i, icon);
 				if (gameType == GameType.JELLY_BASIC
 						|| gameType == GameType.JELLY_2P
-						|| gameType == GameType.JELLY_COVER_2P) {
+						|| gameType == GameType.JELLY_COVER_BASIC) {
 					icon = Assets.getIcon(pileOfThings.getJelly());
 					jellyAnimCell[j][i] = new AnimationCell(j,i,icon);
+				}
+				if (gameType == GameType.JELLY_COVER_BASIC) {
+					icon = Assets.getIcon(pileOfThings.getCover());
+					coverAnimCell[j][i] = new AnimationCell(j,i,icon);
 				}
 			}
 	}
@@ -322,16 +336,17 @@ public class BoardAnimation implements Tablero.Observer{
 
 	@Override
 	public void onDestroyCover(int fila, int col, StuffList newCover) {
-		/* TODO implementar destrucción de coberturas
 		if (this.lastAnimation != AnimationType.DESTROY)
 			this.endOfInteractionGroup();
 		
 		this.nextToQueueList.add(new AnimationTask(
-				AnimationType.JELLY_DESTROY, fila, col, fila, col, Assets.getIcon(newJelly)
+				AnimationType.COVER_DESTROY, fila, col, fila, col, Assets.getIcon(newCover)
 			));
 		
 		this.lastAnimation = AnimationType.DESTROY;
-		*/
+		
+		//XXX TEST
+		System.out.println("Destroy Cover: (" + fila + "," + col + ") -> " + newCover );
 		
 	}
 
@@ -369,8 +384,12 @@ public class BoardAnimation implements Tablero.Observer{
 	public void drawTablero(SpriteBatch batch) {
 		if (gameType == GameType.STEAL_2P)
 			this.pintarGelatina2Jug(batch);
-		else if (gameType == GameType.JELLY_BASIC || gameType == GameType.JELLY_2P)
+		else if (gameType == GameType.JELLY_BASIC || gameType == GameType.JELLY_2P )
 			this.pintarGelatina(batch);
+		else if (gameType == GameType.JELLY_COVER_BASIC) {
+			this.pintarGelatina(batch);
+			this.pintarCobertura(batch);
+		}
 		
 		//Pintar chucherias
 		for (int j=0; j<FILAS; j++) //Para cada fila
@@ -383,11 +402,24 @@ public class BoardAnimation implements Tablero.Observer{
 					batch.draw(animCell[j][i].getSprite(), animCell[j][i].getX(),
 							animCell[j][i].getY(), MD.dim(), MD.dim()
 						);
-				else System.err.println("Sin sprite o icono: chuche("+ j+","+i+")");
+				//XXX TEST else System.err.println("Sin sprite o icono: chuche("+ j+","+i+")");
 			}
 
 	}
 	
+	protected void pintarCobertura(SpriteBatch batch) {
+		//Pintar cobertura
+		for (int j=0; j<FILAS; j++) //Para cada fila
+			for (int i=0; i<COLS; i++) {//para cada casilla de cada fila
+				if (coverAnimCell[j][i].getIcon() != null )
+					batch.draw(coverAnimCell[j][i].getIcon(), coverAnimCell[j][i].getX(),
+							coverAnimCell[j][i].getY(), MD.dim(), MD.dim()
+						);
+				//XXX TEST else System.err.println("Sin sprite o icono: cobertura("+ j+","+i+")");
+			}
+		
+	}
+
 	/**
 	 * Dibuja el tablero, tanto los elementos jugables como las decoraciones del propio tablero,
 	 * tales como el fondo de gelatina
@@ -405,7 +437,7 @@ public class BoardAnimation implements Tablero.Observer{
 					batch.draw(Assets.gelatinaFondo, jellyAnimCell[j][i].getX(),
 							jellyAnimCell[j][i].getY(), MD.dim(), MD.dim()
 						);
-				else System.err.println("Sin sprite o icono: gelatina("+ j+","+i+")");
+				//XXX TEST else System.err.println("Sin sprite o icono: gelatina("+ j+","+i+")");
 			}
 
 	}
@@ -458,6 +490,11 @@ public class BoardAnimation implements Tablero.Observer{
 	 * @see AnimationCell
 	 */
 	private AnimationCell[][] jellyAnimCell;
+	/** Matriz donde cada elemento guarda el texture, la posición y el tamaño de
+	 * la cobertura
+	 * @see AnimationCell
+	 */
+	private AnimationCell[][] coverAnimCell;
 	/**
 	 * Guarda la última animación que se realizó, para poder distinguir cuáles
 	 * se pueden realizar a la vez. No distingue entre distintos tipos de SWAP o de FALL,

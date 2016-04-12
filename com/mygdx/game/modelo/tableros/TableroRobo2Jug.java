@@ -163,9 +163,9 @@ public class TableroRobo2Jug extends Tablero {
 	}
 
 	@Override
-	public void suprimir(int fila, int col, boolean animateDestroy) {
+	public void suprimir(int fila, int col, boolean realDestroy) {
 		tablero[fila][col] = null;
-		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
+		if (realDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
 	}
 
 	@Override

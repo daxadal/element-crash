@@ -8,7 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * Contiene los datos necesarios para mostrar una chuchería por pantalla, tales
  * como la posición, el dibujo o el movimiento/animación que está realizando.
  * {@link BoardAnimation} contiene una martiz de estos elementos, para poder mostrar el tablero 
- * por pantalla
+ * por pantalla. Es necesario que la clase MD haya sido inicializada con 
+ * un resize()
  */
 public class AnimationCell {
 	
@@ -132,6 +133,14 @@ public class AnimationCell {
 		movement = AnimationType.NONE;
 	}
 	
+	public void newCoverDestroy(Texture icon2) {
+		//TODO Hacer animación
+		this.icon = icon;
+		time = 0;
+		this.sprite = null;
+		movement = AnimationType.NONE;		
+	}
+
 	public float getX() {
 		if (movement != AnimationType.NONE)
 			return currentX;

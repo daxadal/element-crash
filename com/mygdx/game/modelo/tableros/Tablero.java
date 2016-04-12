@@ -277,12 +277,23 @@ public abstract class Tablero extends Observable<Tablero.Observer>{
 	protected abstract void rellenar();
 	
 	/**
-	 * Reccorre el tablero en busca de combinaciones, destruyendo los caramelos pertinentes y 
+	 * Recorre el tablero en busca de combinaciones, destruyendo los caramelos pertinentes y 
 	 * generando caramelos especiales si es necesario
 	 * @return Booleano que indica si se ha producido alguna combinacion y, por tanto, 
 	 * es necesario rellenar el tablero
 	 */
-	protected abstract boolean combinarDeBarrido();
+	protected boolean combinarDeBarrido() {
+		Vector<SegmentoFila> combinFila = sacarCombinFilas();
+		Vector<SegmentoCol> combinCol = sacarCombinCols();
+		
+		if (combinFila.isEmpty() && combinCol.isEmpty())
+			return false;
+		else {
+			destruir(combinFila, combinCol);
+			crearEspecialesBarrido(combinFila, combinCol);
+			return true;
+		}
+	}
 	
 	/**
 	 * Permite preguntar si quedan elementos por destruir cuando el tablero está estable.

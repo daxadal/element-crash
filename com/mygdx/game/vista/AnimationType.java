@@ -10,5 +10,8 @@ public enum AnimationType {
 		FALL, FALL_L, FALL_R,
 		
 		//Gelatina
-		JELLY_DESTROY
+		JELLY_DESTROY,
+		
+		//cobertura
+		COVER_DESTROY
 }

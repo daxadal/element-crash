@@ -7,9 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.mygdx.game.controlador.Controlador;
-import com.mygdx.game.modelo.tableros.Tablero;
-import com.mygdx.game.modelo.tableros.TableroJelly2Jug;
-import com.mygdx.game.modelo.tableros.TableroJellyBasic;
+import com.mygdx.game.modelo.tableros.*;
 
 public class MyGdxGame implements ApplicationListener {
 	
@@ -19,7 +17,7 @@ public class MyGdxGame implements ApplicationListener {
 		Assets.loadCandies();
 		
 		batch = new SpriteBatch();
-		this.tablero = new TableroJelly2Jug();
+		this.tablero = new TableroJellyCoverBasic(4, 5, 3);
 
 		this.filaSelec = -1;
 		this.colSelec = -1;

@@ -113,9 +113,9 @@ public class TableroBasic extends Tablero {
 	}
 	
 	@Override
-	public void suprimir(int fila, int col, boolean animateDestroy) {
+	public void suprimir(int fila, int col, boolean realDestroy) {
 		tablero[fila][col] = null;
-		if (animateDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
+		if (realDestroy) for (Observer o: obs) o.onDestroyCandy(fila, col);
 	}
 
 	@Override
@@ -177,23 +177,6 @@ public class TableroBasic extends Tablero {
 			
 		}	
 	}
-
-
-	@Override
-	protected boolean combinarDeBarrido() {
-		Vector<SegmentoFila> combinFila = sacarCombinFilas();
-		Vector<SegmentoCol> combinCol = sacarCombinCols();
-		
-		if (combinFila.isEmpty() && combinCol.isEmpty())
-			return false;
-		else {
-			destruir(combinFila, combinCol);
-			crearEspecialesBarrido(combinFila, combinCol);
-			return true;
-		}
-		
-	}
-
 
 	@Override
 	protected boolean quedaPorDestruir() {

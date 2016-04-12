@@ -7,7 +7,6 @@ import com.mygdx.game.controlador.StuffList;
 import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
-import com.mygdx.game.modelo.tableros.Tablero.Observer;
 
 /**
  * Modalidad de dos jugadores. La mitad izquierda del tablero pertenece inicialmente al jugador rojo,
@@ -210,12 +209,14 @@ public class TableroJelly2Jug extends Tablero {
 			else
 				this.addToDestruirMasTarde(fila, col);
 		}
+		else 
+			this.destruirGelatina(fila, col, true);
 	}
 
 	@Override
-	public void suprimir(int fila, int col, boolean animateDestroy) { //TODO suprimir
+	public void suprimir(int fila, int col, boolean realDestroy) {
 		tableroChuches[fila][col] = null;
-		if (animateDestroy) {
+		if (realDestroy) {
 			for (Observer o: obs) o.onDestroyCandy(fila, col);
 			this.destruirGelatina(fila, col, true);
 		}
@@ -268,21 +269,6 @@ public class TableroJelly2Jug extends Tablero {
 			rellenarCaidaHaciaDcha();
 	}
 	
-
-	@Override
-	protected boolean combinarDeBarrido() {
-		Vector<SegmentoFila> combinFila = sacarCombinFilas();
-		Vector<SegmentoCol> combinCol = sacarCombinCols();
-		
-		if (combinFila.isEmpty() && combinCol.isEmpty())
-			return false;
-		else {
-			destruir(combinFila, combinCol);
-			crearEspecialesBarrido(combinFila, combinCol);
-			return true;
-		}
-		
-	}
 	@Override
 	protected boolean quedaPorDestruir() {
 		return !this.destruirMasTarde.isEmpty();

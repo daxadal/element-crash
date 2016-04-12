@@ -37,7 +37,7 @@ public class MD {
 		
 		//Origin
 		switch (gameType) {
-			case BASIC:	case JELLY_BASIC: case STEAL_2P: case JELLY_2P: case JELLY_COVER_2P:
+			case BASIC:	case JELLY_BASIC: case STEAL_2P: case JELLY_2P: case JELLY_COVER_BASIC:
 				MD.originX = 0;
 				MD.originY = height;
 				break;

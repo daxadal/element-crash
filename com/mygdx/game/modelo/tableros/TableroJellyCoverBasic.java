@@ -8,11 +8,6 @@ import com.mygdx.game.controlador.StuffPile;
 import com.mygdx.game.modelo.caramelos.Caramelo;
 import com.mygdx.game.modelo.caramelos.Chucheria;
 import com.mygdx.game.modelo.caramelos.Color;
-import com.mygdx.game.modelo.tableros.Tablero.ChucheYcoord;
-import com.mygdx.game.modelo.tableros.Tablero.Observer;
-import com.mygdx.game.modelo.tableros.Tablero.SegmentoCol;
-import com.mygdx.game.modelo.tableros.Tablero.SegmentoFila;
-import com.mygdx.game.modelo.tableros.TableroJellyBasic.ChucheYcoordBasic;
 
 public class TableroJellyCoverBasic extends Tablero {
 	
@@ -128,7 +123,7 @@ public class TableroJellyCoverBasic extends Tablero {
 	
 	@Override
 	public void efectoOndaExpansiva(int fila, int col) {
-		if(fila>0 && fila < FILAS && col>0 && col<COLS && tableroCoberturas[fila][col]>0) {
+		if(fila>=0 && fila < FILAS && col>=0 && col<COLS && tableroCoberturas[fila][col]>0) {
 			tableroCoberturas[fila][col]--;
 			for (Observer o: obs) o.onDestroyCover(fila, col, intToCover(tableroCoberturas[fila][col]));
 		}
@@ -172,22 +167,25 @@ public class TableroJellyCoverBasic extends Tablero {
 
 	@Override
 	public void destruir(int fila, int col) { 
-		if (tableroChuches[fila][col] != null) {
-			boolean debeDestruirse = tableroChuches[fila][col].destruir(this, fila, col);
-			if (debeDestruirse) {
-				this.suprimir(fila, col, true);
-			}
-			else
-				this.addToDestruirMasTarde(fila, col);	
-		}
-		else if(tableroCoberturas[fila][col]>0) {
+		if(tableroCoberturas[fila][col]>0) {
 			tableroCoberturas[fila][col]--;
 			for (Observer o: obs) o.onDestroyCover(fila, col, intToCover(tableroGelatinas[fila][col]));
 		}
-		else if(tableroGelatinas[fila][col]>0) {
-			tableroGelatinas[fila][col]--;
-			for (Observer o: obs) o.onDestroyJelly(fila, col, intToWhiteJelly(tableroGelatinas[fila][col]));
+		else  {
+			if (tableroChuches[fila][col] != null) {
+				boolean debeDestruirse = tableroChuches[fila][col].destruir(this, fila, col);
+				if (debeDestruirse) {
+					this.suprimir(fila, col, true);
+				}
+				else
+					this.addToDestruirMasTarde(fila, col);	
+			}
+			else if(tableroGelatinas[fila][col]>0) {
+				tableroGelatinas[fila][col]--;
+				for (Observer o: obs) o.onDestroyJelly(fila, col, intToWhiteJelly(tableroGelatinas[fila][col]));
+			}
 		}
+			
 	}
 	
 	@Override

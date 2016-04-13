@@ -17,7 +17,8 @@ public class MyGdxGame implements ApplicationListener {
 		Assets.loadCandies();
 		
 		batch = new SpriteBatch();
-		this.tablero = new TableroJellyCoverBasic(4, 5, 3);
+		//this.tablero = new TableroJellyCoverBasic(4, 5, 3);
+		this.tablero = new TableroJelly2Jug();
 
 		this.filaSelec = -1;
 		this.colSelec = -1;

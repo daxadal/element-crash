@@ -133,7 +133,7 @@ public class AnimationCell {
 		movement = AnimationType.NONE;
 	}
 	
-	public void newCoverDestroy(Texture icon2) {
+	public void newCoverDestroy(Texture icon) {
 		//TODO Hacer animación
 		this.icon = icon;
 		time = 0;

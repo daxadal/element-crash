@@ -188,8 +188,8 @@ public class BoardAnimation implements Tablero.Observer{
 	private void endOfInteractionGroup() {
 		interactionQueue.add(nextToQueueList);
 		nextToQueueList = new LinkedList<AnimationTask>();
-		//XXX TEST
-		System.out.println(" <----- endOfInteractionGroup ----> ");
+		
+		//XXX TEST System.out.println(" <----- endOfInteractionGroup ----> ");
 	}
 
 	@Override
@@ -225,8 +225,8 @@ public class BoardAnimation implements Tablero.Observer{
 		
 		this.lastAnimation = AnimationType.SWAP_FREE;
 		
-		//XXX TEST
-		System.out.println("Swap: (" + fila1 + "," + col1 + ") <-> (" + fila2 + "," + col2 +")");
+		
+		//XXX TEST System.out.println("Swap: (" + fila1 + "," + col1 + ") <-> (" + fila2 + "," + col2 +")");
 	}
 
 	@Override
@@ -254,8 +254,8 @@ public class BoardAnimation implements Tablero.Observer{
 		
 		this.lastAnimation = AnimationType.FALL;
 		
-		//XXX TEST
-		System.out.println("Fall: (" + filaIni + "," + colIni + ") -> (" + filaFin + "," + colFin +")");
+		
+		//XXX TEST System.out.println("Fall: (" + filaIni + "," + colIni + ") -> (" + filaFin + "," + colFin +")");
 	}
 
 	@Override
@@ -282,8 +282,8 @@ public class BoardAnimation implements Tablero.Observer{
 		
 		this.lastAnimation = AnimationType.FALL;
 		
-		//XXX TEST
-		System.out.println("Create: (" + filaSpawn + "," + colSpawn + ") -> (" + fila + "," + col +")");
+		
+		//XXX TEST System.out.println("Create: (" + filaSpawn + "," + colSpawn + ") -> (" + fila + "," + col +")");
 	}
 
 	@Override
@@ -298,8 +298,8 @@ public class BoardAnimation implements Tablero.Observer{
 				
 		this.lastAnimation = AnimationType.DESTROY;
 		
-		//XXX TEST
-		System.out.println("Destroy candy: (" + fila + "," + col + ")");
+		
+		//XXX TEST System.out.println("Destroy candy: (" + fila + "," + col + ")");
 	}
 	
 	@Override
@@ -314,8 +314,8 @@ public class BoardAnimation implements Tablero.Observer{
 
 		this.lastAnimation = AnimationType.FALL;
 		
-		//XXX TEST
-		System.out.println("Transform candy: (" + fila + "," + col + ") -> " + newCandy );
+		
+		//XXX TEST System.out.println("Transform candy: (" + fila + "," + col + ") -> " + newCandy );
 		
 	}
 
@@ -330,8 +330,8 @@ public class BoardAnimation implements Tablero.Observer{
 		
 		this.lastAnimation = AnimationType.DESTROY;
 		
-		//XXX TEST
-		System.out.println("Destroy Jelly: (" + fila + "," + col + ") -> " + newJelly );
+		
+		//XXX TEST System.out.println("Destroy Jelly: (" + fila + "," + col + ") -> " + newJelly );
 	}
 
 	@Override
@@ -345,8 +345,8 @@ public class BoardAnimation implements Tablero.Observer{
 		
 		this.lastAnimation = AnimationType.DESTROY;
 		
-		//XXX TEST
-		System.out.println("Destroy Cover: (" + fila + "," + col + ") -> " + newCover );
+		
+		//XXX TEST System.out.println("Destroy Cover: (" + fila + "," + col + ") -> " + newCover );
 		
 	}
 

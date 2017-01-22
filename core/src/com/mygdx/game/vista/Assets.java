@@ -84,15 +84,15 @@ public class Assets {
 		cerezaR = new Texture("iconos/candy images/caramelos/cerezaR.png");
 				
 		//gelatinas
-		gelatinaAz2 = new Texture("iconos/candy images/gelatina/gelatinaAzv2.png");
-		gelatinaR2 = new Texture("iconos/candy images/gelatina/gelatinaRv2.png");
-		gelatinaAz1 = new Texture("iconos/candy images/gelatina/gelatinaAz1.png");
-		gelatinaR1 = new Texture("iconos/candy images/gelatina/gelatinaR1.png");
-		gelatinaB4 = new Texture("iconos/candy images/gelatina/gelatinaB4.png");
+		gelatinaAz2 = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoAz.png");//FIXME new Texture("iconos/candy images/gelatina/gelatinaAzv2.png"); 
+		gelatinaR2 = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoR.png");//FIXME new Texture("iconos/candy images/gelatina/gelatinaRv2.png"); 
+		gelatinaAz1 = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoAz.png");//FIXME new Texture("iconos/candy images/gelatina/gelatinaAz1.png");
+		gelatinaR1 = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoR.png");//new Texture("iconos/candy images/gelatina/gelatinaR1.png");
+	/*	gelatinaB4 = new Texture("iconos/candy images/gelatina/gelatinaB4.png");
 		gelatinaB3 = new Texture("iconos/candy images/gelatina/gelatinaB3.png");
 		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB2.png");
 		gelatinaB1 = new Texture("iconos/candy images/gelatina/gelatinaB1v2.png");
-		gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
+	*/	gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
 		
 		//coberturas
 		cobertura5 = new Texture("iconos/candy images/cobertura/cobertura5.png");

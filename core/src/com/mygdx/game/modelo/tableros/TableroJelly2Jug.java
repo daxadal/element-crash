@@ -119,14 +119,14 @@ public class TableroJelly2Jug extends Tablero {
 			turno++;
 		}
 		
-		//XXX TEST Implentar puntos de manera grafica
+		/*XXX TEST Implentar puntos de manera grafica
 		System.out.println("JellyOnBoard: R " + this.gelRojasEnTablero + ","
 				+ "A " + this.gelAzulesEnTablero);
 		if (isRedPlayersTurn)
 			System.out.println("Red's turn!");
 		else
 			System.out.println("Blue's turn!");
-		
+		*/
 		for (Observer o: obs) o.endOfInteraction();
 		return intercambioExitoso;
 	}

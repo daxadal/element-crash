@@ -95,7 +95,7 @@ public class TableroRobo2Jug extends Tablero {
 		if (intercambioExitoso)
 			this.isRedPlayersTurn = !this.isRedPlayersTurn; //Cambio de turno
 		
-		//XXX TEST Implentar puntos de manera grafica
+		/*XXX TEST Implentar puntos de manera grafica
 		System.out.println("Score: R " + this.puntosRojo + ", A " + this.puntosAzul
 				+ " OnBoard: R " + this.ingRojosEnTablero + " (" + this.restantesParaIngRojo + " left),"
 				+ "A " + this.ingAzulesEnTablero + " (" + this.restantesParaIngAzul + " left),");
@@ -103,7 +103,7 @@ public class TableroRobo2Jug extends Tablero {
 			System.out.println("Red's turn!");
 		else
 			System.out.println("Blue's turn!");
-		
+		*/
 		for (Observer o: obs) o.endOfInteraction();
 		return intercambioExitoso;
 	}
@@ -240,7 +240,7 @@ public class TableroRobo2Jug extends Tablero {
 	 */
 	private boolean buscarIngredientesParaDestruir() {
 		boolean modificado = false;
-		System.out.print("Iniciando busqueda de ingredientes... ");
+		//XXX TEST System.out.print("Iniciando busqueda de ingredientes... ");
 		for (int i=0; i<FILAS; i++) { //Para cada fila
 			for (int j=0; j<COLS/2; j++) {//para cada casilla de cada fila
 				if (tablero[i][j].getID() == StuffList.CEREZA_ROJA) {
@@ -255,7 +255,7 @@ public class TableroRobo2Jug extends Tablero {
 				}
 			}
 		}
-		System.out.println("Busqueda finalizada!");
+		//XXX TEST System.out.println("Busqueda finalizada!");
 		return modificado;
 	}
 

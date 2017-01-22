@@ -198,8 +198,8 @@ public class Caramelo implements Chucheria {
 			tablero.efectoOndaExpansiva(fila, col+1);
 		}
 		
-		//XXX TEST
-		System.out.println("onda realizada");
+		
+		//XXX TEST System.out.println("onda realizada");
 	}
 	
 	/** Cuenta cuantos caramelos hay del mismo color a uno dado (sin contar éste) en una dirección dada,

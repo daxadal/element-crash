@@ -62,17 +62,17 @@ public class Assets {
 		verdeRV = new Texture("iconos/candy images/caramelos/NormRayEnv/RvertV.png");
 		
 		//Envueltos (inactivos)
-		azulE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoAz.png");
+		azulE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoAzgood.png");
 		amarilloE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoAm.png");
-		rojoE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoR.png");
+		rojoE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoRgood.png");
 		naranjaE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoN.png");
 		moradoE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoM.png");
 		verdeE = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoV.png");
 		
 		//Envueltos (explotando)
-		azulX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoAz.png");
+		azulX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoAzgood.png");
 		amarilloX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoAm.png");
-		rojoX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoR.png");
+		rojoX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoRgood.png");
 		naranjaX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoN.png");
 		moradoX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoM.png");
 		verdeX = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoV.png");
@@ -84,15 +84,15 @@ public class Assets {
 		cerezaR = new Texture("iconos/candy images/caramelos/cerezaR.png");
 				
 		//gelatinas
-		gelatinaAz2 = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoAz.png");//FIXME new Texture("iconos/candy images/gelatina/gelatinaAzv2.png"); 
-		gelatinaR2 = new Texture("iconos/candy images/caramelos/NormRayEnv/envueltoR.png");//FIXME new Texture("iconos/candy images/gelatina/gelatinaRv2.png"); 
-		gelatinaAz1 = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoAz.png");//FIXME new Texture("iconos/candy images/gelatina/gelatinaAz1.png");
-		gelatinaR1 = new Texture("iconos/candy images/caramelos/NormRayEnv/estalladoR.png");//new Texture("iconos/candy images/gelatina/gelatinaR1.png");
-	/*	gelatinaB4 = new Texture("iconos/candy images/gelatina/gelatinaB4.png");
+		gelatinaAz2 = new Texture("iconos/candy images/gelatina/gelatinaAzv2.png"); 
+		gelatinaR2 = new Texture("iconos/candy images/gelatina/gelatinaRv2.png"); 
+		gelatinaAz1 = new Texture("iconos/candy images/gelatina/gelatinaAz1.png");
+		gelatinaR1 = new Texture("iconos/candy images/gelatina/gelatinaR1.png");
+		gelatinaB4 = new Texture("iconos/candy images/gelatina/gelatinaB4.png");
 		gelatinaB3 = new Texture("iconos/candy images/gelatina/gelatinaB3.png");
 		gelatinaB2 = new Texture("iconos/candy images/gelatina/gelatinaB2.png");
 		gelatinaB1 = new Texture("iconos/candy images/gelatina/gelatinaB1v2.png");
-	*/	gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
+		gelatinaFondo = new Texture("iconos/candy images/gelatina/Fondo.png");
 		
 		//coberturas
 		cobertura5 = new Texture("iconos/candy images/cobertura/cobertura5.png");
@@ -193,7 +193,7 @@ public class Assets {
 	 * @param ANIM_DURATION duración de la animación
 	 * @return Cclase Animation cargada con la animación
 	 */
-	private static Animation loadAnimation(String url, int FRAME_ROWS, int FRAME_COLS, float ANIM_DURATION) {
+	private static Animation<TextureRegion> loadAnimation(String url, int FRAME_ROWS, int FRAME_COLS, float ANIM_DURATION) {
 		//Animations
 		Texture walkSheet = new Texture(Gdx.files.internal(url));
 		TextureRegion[][] tmp = TextureRegion.split(walkSheet,
@@ -209,7 +209,7 @@ public class Assets {
 			}
 		}
 		
-		return new Animation(ANIM_DURATION / (FRAME_COLS * FRAME_ROWS), walkFrames); 
+		return new Animation<TextureRegion>(ANIM_DURATION / (FRAME_COLS * FRAME_ROWS), walkFrames); 
 	}
 	
 	//Normales
@@ -278,5 +278,5 @@ public class Assets {
 
 	public static Texture back;
 	
-	public static Animation destroy;
+	public static Animation<TextureRegion> destroy;
 }

@@ -33,12 +33,12 @@ public class GifTest implements ApplicationListener{
 				walkFrames[index++] = tmp[i][j];
 			}
 		}
-		walkAnimation = new Animation(0.07f, walkFrames); // #11
+		walkAnimation = new Animation<TextureRegion>(0.07f, walkFrames); // #11
 		spriteBatch = new SpriteBatch(); // #12
 		stateTime = 0f; // #13
 		
 		Assets.loadCandies();
-		anim = new AnimationData(5, 5, Assets.azulN);
+		anim = new AnimationCell(5, 5, Assets.azulN);
 		anim.newDestroy();
 
 	}	
@@ -84,8 +84,8 @@ public class GifTest implements ApplicationListener{
 	private static final int FRAME_COLS = 5; // #1
 	private static final int FRAME_ROWS = 3; // #2
 
-	AnimationData anim;
-	Animation walkAnimation; // #3
+	AnimationCell anim;
+	Animation<TextureRegion> walkAnimation; // #3
 	SpriteBatch spriteBatch; // #6
 	TextureRegion currentFrame; // #7
 	float stateTime; // #8

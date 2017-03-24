@@ -26,7 +26,7 @@ public class GifData {
 			}
 		}
 		
-		walkAnimation = new Animation(ANIM_DURATION, walkFrames); 
+		walkAnimation = new Animation<TextureRegion>(ANIM_DURATION, walkFrames); 
 		batch = new SpriteBatch(); 
 		time = 0f; 
 	}
@@ -49,7 +49,7 @@ public class GifData {
 	private static final int FRAME_COLS = 5; // #1
 	private static final int FRAME_ROWS = 6; // #2
 	
-	private Animation walkAnimation; // #3
+	private Animation<TextureRegion> walkAnimation; // #3
 	private SpriteBatch batch; // #6
 	private TextureRegion currentFrame; // #7
 	private float time; // #8
